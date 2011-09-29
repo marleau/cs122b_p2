@@ -1,0 +1,31 @@
+Header.html -- contains site banner image;links to Home, Adv. Search, Sign In, My Cart; Search Box; Same for every page
+
+login -- read user/pass and track user; use HTTP POST
+
+home -- random titles; movie by genre; movie by title
+
+
+listResults -- displays outcome of search with list of movies, links to movies/stars; sorting and divide by page
+advSearch -- similar to listResults but with more options fed into it; could be one class
+
+
+movieDetails -- info; links to stars
+
+starDetails -- info; links to movies
+
+Cart -> Cust. Info. -> Confirmation
+
+
+Possible Steps:
+Implement the "Login" Page;
+Implement the "Search" Page;
+Implement the "Movie list" page, including the "Sorting" and "Prev/Next" features;
+Implement the "Single Movie" page;
+Implement the "Single Star" page;
+Implement the "Browsing by movie genre" page;
+Implement the "Browsing by movie title" page;
+Add a "Add to Shopping Cart" button to each movie on all pages;
+Add a "Checkout" button to all pages;
+Implement the page to do checkout.
+
+

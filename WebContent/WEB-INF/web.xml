@@ -11,12 +11,22 @@
   </welcome-file-list>
   <servlet>
     <description></description>
-    <display-name>listResults</display-name>
-    <servlet-name>listResults</servlet-name>
-    <servlet-class>listResults</servlet-class>
+    <display-name>ListResults</display-name>
+    <servlet-name>ListResults</servlet-name>
+    <servlet-class>ListResults</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>listResults</servlet-name>
-    <url-pattern>/listResults</url-pattern>
+    <servlet-name>ListResults</servlet-name>
+    <url-pattern>/ListResults</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>LoginPage</display-name>
+    <servlet-name>LoginPage</servlet-name>
+    <servlet-class>LoginPage</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginPage</servlet-name>
+    <url-pattern>/LoginPage</url-pattern>
   </servlet-mapping>
 </web-app>
