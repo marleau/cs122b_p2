@@ -1,17 +1,28 @@
 Header.html -- contains site banner image;links to Home, Adv. Search, Sign In, My Cart; Search Box; Same for every page
 
-login -- read user/pass and track user; use HTTP POST
+LoginPage -- read user/pass and track user; use HTTP POST
 
 home -- random titles; movie by genre; movie by title
 
 
-listResults -- displays outcome of search with list of movies, links to movies/stars; sorting and divide by page
-advSearch -- similar to listResults but with more options fed into it; could be one class
+*ListResults -- displays outcome of search with list of movies, links to movies/stars; sorting and divide by page
+  by=["title"|"letter"|"genre"|"year"|"director"]
+  arg="search string"
+  order=["t_a"|"t_d"|"y_a"|"y_d"] //title/year ascending/descending
+  page=# //page number starting at 1
+  rpp=# //results per page
 
 
-movieDetails -- info; links to stars
+advSearch -- similar to listResults but with more options fed into it
 
-starDetails -- info; links to movies
+
+*MovieDetails -- info; links to stars
+  id=movie_id
+
+*StarDetails -- info; links to movies
+  id=star_id
+
+
 
 Cart -> Cust. Info. -> Confirmation
 
@@ -20,8 +31,8 @@ Possible Steps:
 Implement the "Login" Page;
 Implement the "Search" Page;
 Implement the "Movie list" page, including the "Sorting" and "Prev/Next" features;
-Implement the "Single Movie" page;
-Implement the "Single Star" page;
+*Implement the "Single Movie" page;
+*Implement the "Single Star" page;
 Implement the "Browsing by movie genre" page;
 Implement the "Browsing by movie title" page;
 Add a "Add to Shopping Cart" button to each movie on all pages;

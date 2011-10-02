@@ -58,14 +58,17 @@ public class MovieDetails extends HttpServlet {
 			if (dbcon == null)
 				out.println("dbcon is null.");
 
-			// Declare our statement
+			String movieID = request.getParameter("id");
+			// Declare our statement			
 			Statement statement = dbcon.createStatement();
 			String query = "SELECT * FROM stars s, stars_in_movies si, movies m "
 					+ "WHERE si.star_id=s.id "
 					+ "AND si.movie_id=m.id "
-					+ "AND m.id =" + request.getParameter("id");
+					+ "AND m.id ='" + movieID+"'";
 
 			ResultSet rs = statement.executeQuery(query);
+			
+			
 
 			if (rs.next()) {
 
@@ -78,9 +81,29 @@ public class MovieDetails extends HttpServlet {
 				out.println("<HTML><HEAD><TITLE>Fabflix -- " + title + "</TITLE></HEAD>");
 				out.println("<BODY><H1>" + title + "</H1><br>" + "<a href=\""
 						+ trailerURL + "\"><img src=\"" + bannerURL + "\">"
-						+ "<br>Trailer</a><br>" + "Year: " + year + "<br>"
-						+ "Director: " + director + "<br><br>");
-
+						+ "<br>Trailer</a><br><br>" + "Year: <a href=\"ListResults?by=year&arg=" + year +"\">"+ year+ "</a><br>"
+						+ "Director: <a href=\"ListResults?by=director&arg="+director+"\">"+ director + "</a>");
+				
+				//===Genres
+				out.println("<br>Genre: ");
+				statement = dbcon.createStatement();
+				ResultSet genres = statement.executeQuery("SELECT DISTINCT name " +
+						"FROM movies m, genres_in_movies g, genres g1 " +
+						"WHERE g.movie_id=m.id " +
+						"AND g.genre_id=g1.id " +
+						"AND m.id ='" + movieID+"'");
+				if (genres.next()){
+					String genre = genres.getString("name").trim();
+					out.println("<a href=\"ListResults?by=genre&arg="+genre+"\">" + genre + "</a>");
+					while (genres.next()){
+						genre = genres.getString("name").trim();
+						out.println(", <a href=\"ListResults?by=genre&arg="+genre+"\">" + genre + "</a>");			
+					}
+				}
+				
+				
+				out.println("<br><br>Stars:<br>");
+				
 				do {
 					String starName = rs.getString("first_name") + " " + rs.getString("last_name");
 					String starIMG = rs.getString("photo_url");
@@ -88,10 +111,13 @@ public class MovieDetails extends HttpServlet {
 					
 					out.println("<a href=\"StarDetails?id="
 							+ starID + "\"><img src=\"" + starIMG + "\">"
-							+ starName+"</a><br><br>");
+							+ starName +"</a><br><br>");
 					
 				} while (rs.next());
 				out.println("</BODY></HTML>");
+	              rs.close();
+	              statement.close();
+	              dbcon.close();
 			} else {
 				String title = "Fabflix -- Movie Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
@@ -104,6 +130,7 @@ public class MovieDetails extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        out.close();
 	}
 
 	/**

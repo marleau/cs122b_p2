@@ -66,7 +66,7 @@ public class StarDetails extends HttpServlet {
 			String query = "SELECT * FROM stars s, stars_in_movies si, movies m "
 					+ "WHERE si.star_id=s.id "
 					+ "AND si.movie_id=m.id "
-					+ "AND s.id =" + request.getParameter("id");
+					+ "AND s.id ='" + request.getParameter("id")+"'";
 
 			ResultSet rs = statement.executeQuery(query);
 
@@ -92,6 +92,9 @@ public class StarDetails extends HttpServlet {
 					
 				} while (rs.next());
 				out.println("</BODY></HTML>");
+	              rs.close();
+	              statement.close();
+	              dbcon.close();
 			} else {
 				String title = "Fabflix -- Movie Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
@@ -104,6 +107,7 @@ public class StarDetails extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        out.close();
 	}
 
 	/**
