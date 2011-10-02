@@ -1,34 +1,37 @@
+
+
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import javax.naming.InitialContext;
-import javax.naming.Context;
-import javax.naming.NamingException;
-
-import java.sql.*;
 
 /**
- * Servlet implementation class MovieDetails
+ * Servlet implementation class StarDetails
  */
-public class MovieDetails extends HttpServlet {
+public class StarDetails extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public StarDetails() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
 	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public MovieDetails() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -63,32 +66,29 @@ public class MovieDetails extends HttpServlet {
 			String query = "SELECT * FROM stars s, stars_in_movies si, movies m "
 					+ "WHERE si.star_id=s.id "
 					+ "AND si.movie_id=m.id "
-					+ "AND m.id =" + request.getParameter("id");
+					+ "AND s.id =" + request.getParameter("id");
 
 			ResultSet rs = statement.executeQuery(query);
 
 			if (rs.next()) {
+				String starName = rs.getString("first_name") + " " + rs.getString("last_name");
+				String starIMG = rs.getString("photo_url");
+				String dob = rs.getString("dob");
 
-				String title = rs.getString("title");
-				Integer year = rs.getInt("year");
-				String director = rs.getString("director");
-				String bannerURL = rs.getString("banner_url");
-				String trailerURL = rs.getString("trailer_url");
-
-				out.println("<HTML><HEAD><TITLE>Fabflix -- " + title + "</TITLE></HEAD>");
-				out.println("<BODY><H1>" + title + "</H1><br>" + "<a href=\""
-						+ trailerURL + "\"><img src=\"" + bannerURL + "\">"
-						+ "<br>Trailer</a><br>" + "Year: " + year + "<br>"
-						+ "Director: " + director + "<br><br>");
+				out.println("<HTML><HEAD><TITLE>Fabflix -- " + starName + "</TITLE></HEAD>");
+				out.println("<BODY><H1>" + starName + "</H1><br>" + "<img src=\"" + starIMG + "\">"
+						+ "<br>" + "Date of Birth: " + dob + "<br><br>Starred in:<br>");
 
 				do {
-					String starName = rs.getString("first_name") + " " + rs.getString("last_name");
-					String starIMG = rs.getString("photo_url");
-					Integer starID = rs.getInt("star_id");
+					String title = rs.getString("title");
+					Integer year = rs.getInt("year");
+					Integer movieID = rs.getInt("movie_id");
+
+					String bannerURL = rs.getString("banner_url");
 					
-					out.println("<a href=\"StarDetails?id="
-							+ starID + "\"><img src=\"" + starIMG + "\">"
-							+ starName+"</a><br><br>");
+					out.println("<a href=\"MovieDetails?id="
+							+ movieID + "\"><img src=\"" + bannerURL + "\">"
+							+ title+" ("+year+")"+"</a><br><br>");
 					
 				} while (rs.next());
 				out.println("</BODY></HTML>");

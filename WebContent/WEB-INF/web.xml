@@ -39,4 +39,14 @@
     <servlet-name>MovieDetails</servlet-name>
     <url-pattern>/MovieDetails</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>StarDetails</display-name>
+    <servlet-name>StarDetails</servlet-name>
+    <servlet-class>StarDetails</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>StarDetails</servlet-name>
+    <url-pattern>/StarDetails</url-pattern>
+  </servlet-mapping>
 </web-app>
