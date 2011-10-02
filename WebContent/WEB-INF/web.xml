@@ -29,4 +29,14 @@
     <servlet-name>LoginPage</servlet-name>
     <url-pattern>/LoginPage</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>MovieDetails</display-name>
+    <servlet-name>MovieDetails</servlet-name>
+    <servlet-class>MovieDetails</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MovieDetails</servlet-name>
+    <url-pattern>/MovieDetails</url-pattern>
+  </servlet-mapping>
 </web-app>
