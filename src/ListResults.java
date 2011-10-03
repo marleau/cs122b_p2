@@ -139,7 +139,7 @@ public class ListResults extends HttpServlet {
 						+ "WHERE g.movie_id=m.id "
 						+ "AND g.genre_id=g1.id "
 						+ "AND name = '" + arg + "' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
-				fullQuery = "SELECT DISTINCT * FROM movies m, genres_in_movies g, genres g1 "
+				fullQuery = "SELECT DISTINCT count(*) FROM movies m, genres_in_movies g, genres g1 "
 					+ "WHERE g.movie_id=m.id "
 					+ "AND g.genre_id=g1.id "
 					+ "AND name = '" + arg + "' ";
@@ -250,16 +250,16 @@ public class ListResults extends HttpServlet {
 					out.println("Prev");
 				}
 				
-				rs.last();
+
 				out.println("|");
-				rs.beforeFirst();
-				
+
+				rs.last();
 				if (rs.getRow() < resultsPerPage){
 					out.println("Next");
 				}else{
 					out.println("<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+(page+1)+"&rpp="+resultsPerPage+"&order="+order+"\">Next</a>");
 				}
-				
+				rs.beforeFirst();
 				
 				//===Results per page
 				//TODO maybe adjust page when changing number of results to keep centered
