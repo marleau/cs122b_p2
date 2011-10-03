@@ -131,22 +131,32 @@ public class ListResults extends HttpServlet {
 
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
+			Statement fullStatement = dbcon.createStatement();
 			String query;
+			String fullQuery;
 			if (searchBy.equals("genre")) {
 				query = "SELECT DISTINCT * FROM movies m, genres_in_movies g, genres g1 "
 						+ "WHERE g.movie_id=m.id "
 						+ "AND g.genre_id=g1.id "
 						+ "AND name = '" + arg + "' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
+				fullQuery = "SELECT DISTINCT * FROM movies m, genres_in_movies g, genres g1 "
+					+ "WHERE g.movie_id=m.id "
+					+ "AND g.genre_id=g1.id "
+					+ "AND name = '" + arg + "' ";
 			} else if (searchBy.equals("letter")) {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '^" + arg +"' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
+				fullQuery = "SELECT DISTINCT count(*) FROM movies m WHERE title REGEXP '^" + arg +"' ";
 			} else if (searchBy.equals("title")) {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '" + arg +"' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
+				fullQuery = "SELECT DISTINCT count(*) FROM movies m WHERE title REGEXP '" + arg +"' ";
 			} else {
-				query = "SELECT DISTINCT * FROM movies m WHERE " + searchBy
-						+ " = '" + arg + "' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
+				query = "SELECT DISTINCT * FROM movies m WHERE " + searchBy + " = '" + arg + "' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
+				fullQuery = "SELECT DISTINCT count(*) FROM movies m WHERE " + searchBy + " = '" + arg + "'";
 			}
 			ResultSet rs = statement.executeQuery(query);
-			
+			ResultSet fullCount = fullStatement.executeQuery(fullQuery);
+			fullCount.next();
+			int numberOfResults = fullCount.getInt(1);
 			
 			//===Start Writing Page
 			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by "+searchBy+": "+arg+"</TITLE></HEAD><BODY><h1>FabFlix</h1><hr>" );
@@ -171,7 +181,7 @@ public class ListResults extends HttpServlet {
 					"<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=y_d\">des</a>" +
 							")<br>");
 			
-			out.println("Page: "+page+" ("+resultsPerPage+" results per page)<br><br>");
+			out.println("Page: "+page+" ( "+numberOfResults+" Results : "+resultsPerPage+" results per page)<br><br>");
 			
 			boolean hadResults = false;
 			
@@ -242,6 +252,7 @@ public class ListResults extends HttpServlet {
 				
 				rs.last();
 				out.println("|");
+				rs.beforeFirst();
 				
 				if (rs.getRow() < resultsPerPage){
 					out.println("Next");
