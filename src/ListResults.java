@@ -133,25 +133,25 @@ public class ListResults extends HttpServlet {
 			Statement statement = dbcon.createStatement();
 			Statement fullStatement = dbcon.createStatement();
 			String query;
-			String fullQuery;
+			String fullQuery;//full search to count results
 			if (searchBy.equals("genre")) {
 				query = "SELECT DISTINCT * FROM movies m, genres_in_movies g, genres g1 "
 						+ "WHERE g.movie_id=m.id "
 						+ "AND g.genre_id=g1.id "
 						+ "AND name = '" + arg + "' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
-				fullQuery = "SELECT DISTINCT count(*) FROM movies m, genres_in_movies g, genres g1 "
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, genres_in_movies g, genres g1 "
 					+ "WHERE g.movie_id=m.id "
 					+ "AND g.genre_id=g1.id "
-					+ "AND name = '" + arg + "' ";
+					+ "AND name = '" + arg + "') as results";
 			} else if (searchBy.equals("letter")) {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '^" + arg +"' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
-				fullQuery = "SELECT DISTINCT count(*) FROM movies m WHERE title REGEXP '^" + arg +"' ";
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '^" + arg +"') as results";
 			} else if (searchBy.equals("title")) {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '" + arg +"' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
-				fullQuery = "SELECT DISTINCT count(*) FROM movies m WHERE title REGEXP '" + arg +"' ";
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '" + arg +"') as results";
 			} else {
 				query = "SELECT DISTINCT * FROM movies m WHERE " + searchBy + " = '" + arg + "' "+order+" LIMIT "+ listStart + "," +resultsPerPage;
-				fullQuery = "SELECT DISTINCT count(*) FROM movies m WHERE " + searchBy + " = '" + arg + "'";
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + arg + "') as results";
 			}
 			ResultSet rs = statement.executeQuery(query);
 			ResultSet fullCount = fullStatement.executeQuery(fullQuery);
