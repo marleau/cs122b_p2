@@ -110,7 +110,7 @@ public class ListResults extends HttpServlet {
 				page=1;
 			}
 			
-			//===Reasults per page
+			//===Results per page
 			try{
 				resultsPerPage = Integer.valueOf(request.getParameter("rpp"));
 			} catch (NumberFormatException e){
@@ -181,7 +181,7 @@ public class ListResults extends HttpServlet {
 					"<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=y_d\">des</a>" +
 							")<br>");
 			
-			out.println("Page: "+page+" ( "+numberOfResults+" Results : "+resultsPerPage+" results per page)<br><br>");
+			out.println("Page: "+page+" ( "+numberOfResults+" Results : "+resultsPerPage+" results per page )<br><br>");
 			
 			boolean hadResults = false;
 			
@@ -262,7 +262,7 @@ public class ListResults extends HttpServlet {
 				rs.beforeFirst();
 				
 				//===Results per page
-				//TODO maybe adjust page when changing number of results to keep centered
+				//TODO maybe adjust page number when changing number of results to keep centered
 				out.println("<br>Results per page: ");
 				out.println("<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp=5&order="+order+"\">5</a>");
 				out.println("<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp=25&order="+order+"\">25</a>");

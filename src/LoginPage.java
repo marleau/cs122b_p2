@@ -54,7 +54,7 @@ public class LoginPage extends HttpServlet {
 			session.setAttribute("logon.isDone", account);
 			// Try redirecting the client to the page he first tried to access
 			try {
-				String target = (String) session.getAttribute("login.target");
+				String target = (String) session.getAttribute("login.target");//TODO store address if user goes to a page w/o logging in
 				if (target != null) {
 					response.sendRedirect(target);
 					return;
@@ -64,7 +64,7 @@ public class LoginPage extends HttpServlet {
 
 			// Couldn't redirect to the target. Redirect to the site's home
 			// page.
-			response.sendRedirect("/Fabflix/ListResults");
+			response.sendRedirect("/Fabflix/ListResults");//TODO Go to home page once designed
 
 		}
 
@@ -72,11 +72,11 @@ public class LoginPage extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response); //DEBUG must only do post
+		//doPost(request, response); //DEBUG must only do post
 	}
 
 	private boolean validUser(String account, String password) {
-		// TODO Auto-generated method stub
+		// TODO Validate user
 		return true;
 	}
 }
