@@ -30,7 +30,7 @@ public class LoginPage extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
-		String title = "Fabflix Login";
+		String title = "FabFlix Login";
 		String docType = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 "
 				+ "Transitional//EN\">\n";
 		out.println(docType + "<HTML>\n" + "<HEAD><TITLE>" + title

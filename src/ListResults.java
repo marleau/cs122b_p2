@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -69,7 +68,7 @@ public class ListResults extends HttpServlet {
 			Integer page;
 			Integer resultsPerPage;
 		
-			//===Search
+			//===Search By
 			try {
 				if (!(searchBy.equals("title") 
 						|| searchBy.equals("letter")
@@ -77,13 +76,13 @@ public class ListResults extends HttpServlet {
 						|| searchBy.equals("year") 
 						|| searchBy.equals("director"))) {
 					searchBy = "title";
-				}// TODO check for empty search and give assorted lists to browse
+				}
 			} catch (NullPointerException e) {
 				searchBy = "title";
 			}
 			
 			//===Argument value
-			if (arg == null){
+			if (arg == null || arg.isEmpty()){
 				arg = " ";
 			}
 			
@@ -149,26 +148,31 @@ public class ListResults extends HttpServlet {
 			ResultSet rs = statement.executeQuery(query);
 			
 			
-			
-			out.println("<HTML><HEAD><TITLE>Fabflix -- Search by "+searchBy+": "+arg+"</TITLE></HEAD>");
-			out.println("<BODY><H1>Search by "+searchBy+": "+arg+"</H1><br>");
-			
-			
-			
-			
-			//TODO sorting and results per page options
-			out.println("Sort by: Title" +
-					"(<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=t_a\">asc</a>)" +
-					"(<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=t_d\">des</a>) " +
-							"Year" +
-							"(<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=y_a\">asc</a>)" +
-							"(<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=y_d\">des</a>)<br>");
-			
-
+			//===Start Writing Page
+			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by "+searchBy+": "+arg+"</TITLE></HEAD><BODY><h1>FabFlix</h1><hr>" );
+			//===Search Box
+			out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles: <INPUT TYPE=\"TEXT\" NAME=\"arg\">" +
+					"<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\""+resultsPerPage+"\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\">  </CENTER></FORM>");
 			
 			
-			//TODO determine a way to find the total number of results/pages
+			out.println("<br><H1>Search by "+searchBy+": "+arg+"</H1><br>");
+			
+			
+			
+			
+			//sorting and results per page options
+			out.println("Sort by: Title(" +
+					"<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=t_a\">asc</a>" +
+							")(" +
+					"<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=t_d\">des</a>" +
+							") Year(" +
+					"<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=y_a\">asc</a>" +
+							")(" +
+					"<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp="+resultsPerPage+"&order=y_d\">des</a>" +
+							")<br>");
+			
 			out.println("Page: "+page+" ("+resultsPerPage+" results per page)<br><br>");
+			
 			boolean hadResults = false;
 			
 			
@@ -219,16 +223,45 @@ public class ListResults extends HttpServlet {
 						out.println(", <a href=\"StarDetails?id="+starID+"\">" + starName + "</a>");			
 					}
 				}
-				
+
+
 				
 				out.println("<hr>");
+				
+				
 			}
 			
-			if (!hadResults){
+			if (hadResults){
+				//===Paging
+				
+				if (page > 1){
+					out.println("<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+(page-1)+"&rpp="+resultsPerPage+"&order="+order+"\">Prev</a>");
+				}else{
+					out.println("Prev");
+				}
+				
+				rs.last();
+				out.println("|");
+				
+				if (rs.getRow() < resultsPerPage){
+					out.println("Next");
+				}else{
+					out.println("<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+(page+1)+"&rpp="+resultsPerPage+"&order="+order+"\">Next</a>");
+				}
+				
+				
+				//===Results per page
+				//TODO maybe adjust page when changing number of results to keep centered
+				out.println("<br>Results per page: ");
+				out.println("<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp=5&order="+order+"\">5</a>");
+				out.println("<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp=25&order="+order+"\">25</a>");
+				out.println("<a href=\"ListResults?by="+searchBy+"&arg="+arg+"&page="+page+"&rpp=100&order="+order+"\">100</a>");
+				out.println("<br><hr>");
+
+			}else{
 				out.println("<h3>No Results.</h3><hr>");
 			}
 
-			//TODO paging
 			
 			
 			//===GENRE browser

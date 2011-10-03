@@ -78,7 +78,7 @@ public class MovieDetails extends HttpServlet {
 				String bannerURL = rs.getString("banner_url");
 				String trailerURL = rs.getString("trailer_url");
 
-				out.println("<HTML><HEAD><TITLE>Fabflix -- " + title + "</TITLE></HEAD>");
+				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title + "</TITLE></HEAD>");
 				out.println("<BODY><H1>" + title + "</H1><br>" + "<a href=\""
 						+ trailerURL + "\"><img src=\"" + bannerURL + "\">"
 						+ "<br>Trailer</a><br><br>" + "Year: <a href=\"ListResults?by=year&arg=" + year +"\">"+ year+ "</a><br>"
@@ -119,7 +119,7 @@ public class MovieDetails extends HttpServlet {
 	              statement.close();
 	              dbcon.close();
 			} else {
-				String title = "Fabflix -- Movie Not Found";
+				String title = "FabFlix -- Movie Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
 				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
 			}

@@ -75,7 +75,7 @@ public class StarDetails extends HttpServlet {
 				String starIMG = rs.getString("photo_url");
 				String dob = rs.getString("dob");
 
-				out.println("<HTML><HEAD><TITLE>Fabflix -- " + starName + "</TITLE></HEAD>");
+				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName + "</TITLE></HEAD>");
 				out.println("<BODY><H1>" + starName + "</H1><br>" + "<img src=\"" + starIMG + "\">"
 						+ "<br>" + "Date of Birth: " + dob + "<br><br>Starred in:<br>");
 
@@ -96,7 +96,7 @@ public class StarDetails extends HttpServlet {
 	              statement.close();
 	              dbcon.close();
 			} else {
-				String title = "Fabflix -- Movie Not Found";
+				String title = "FabFlix -- Movie Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
 				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
 			}
