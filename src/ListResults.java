@@ -69,6 +69,7 @@ public class ListResults extends HttpServlet {
 			Integer page;
 			Integer resultsPerPage;
 		
+			//===Search
 			try {
 				if (!(searchBy.equals("title") 
 						|| searchBy.equals("letter")
@@ -81,6 +82,7 @@ public class ListResults extends HttpServlet {
 				searchBy = "title";
 			}
 			
+			//===Argument value
 			if (arg == null){
 				arg = " ";
 			}
@@ -167,10 +169,11 @@ public class ListResults extends HttpServlet {
 			
 			//TODO determine a way to find the total number of results/pages
 			out.println("Page: "+page+" ("+resultsPerPage+" results per page)<br><br>");
-			
+			boolean hadResults = false;
 			
 			
 			while (rs.next()) {//For each movie
+				hadResults = true;
 				String movieID = rs.getString("id");
 				String title = rs.getString("title");
 				String year = rs.getString("year");
@@ -220,13 +223,45 @@ public class ListResults extends HttpServlet {
 				
 				out.println("<hr>");
 			}
+			
+			if (!hadResults){
+				out.println("<h3>No Results.</h3><hr>");
+			}
 
 			//TODO paging
 			
 			
-			//TODO categories
+			//===GENRE browser
+			out.println("<br>Genres: ");
+			int col = 0;
+			statement = dbcon.createStatement();
+			ResultSet allGenre = statement.executeQuery("SELECT DISTINCT name FROM genres ORDER BY name");
+			if(allGenre.next()){
+				col++;
+				String genreName = allGenre.getString("name");
+				out.println("<a href=\"ListResults?by=genre&arg="+genreName+"&page=1&rpp="+resultsPerPage+"\">"+genreName+"</a>");
+				while (allGenre.next()){
+					col++;
+					genreName= allGenre.getString("name");
+					out.println(" | <a href=\"ListResults?by=genre&arg="+genreName+"&page=1&rpp="+resultsPerPage+"\">"+genreName+"</a>");
+					if (col>=10 && allGenre.next()){
+						genreName= allGenre.getString("name");
+						out.println("<br><a href=\"ListResults?by=genre&arg="+genreName+"&page=1&rpp="+resultsPerPage+"\">"+genreName+"</a>");
+						col=1;
+					}//10 items per row 
+				}
+			}
 			
-
+			out.println("<hr>");
+			
+			//===Letter Browser
+			out.println("<br>Browse: ");
+			col=0;
+			String alphaNum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			for (int i=0;i<alphaNum.length();i++){
+				if(i!=0){out.println("-");}
+				out.println("<a href=\"ListResults?by=letter&arg="+alphaNum.charAt(i)+"&page=1&rpp="+resultsPerPage+"\">"+alphaNum.charAt(i)+"</a>");
+			}
 
 			out.println("</BODY></HTML>");
 			rs.close();

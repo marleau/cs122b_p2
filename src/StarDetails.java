@@ -66,7 +66,7 @@ public class StarDetails extends HttpServlet {
 			String query = "SELECT * FROM stars s, stars_in_movies si, movies m "
 					+ "WHERE si.star_id=s.id "
 					+ "AND si.movie_id=m.id "
-					+ "AND s.id ='" + request.getParameter("id")+"'";
+					+ "AND s.id ='" + request.getParameter("id")+"' ORDER BY year";
 
 			ResultSet rs = statement.executeQuery(query);
 

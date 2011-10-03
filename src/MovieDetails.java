@@ -64,7 +64,7 @@ public class MovieDetails extends HttpServlet {
 			String query = "SELECT * FROM stars s, stars_in_movies si, movies m "
 					+ "WHERE si.star_id=s.id "
 					+ "AND si.movie_id=m.id "
-					+ "AND m.id ='" + movieID+"'";
+					+ "AND m.id ='" + movieID+"' ORDER BY last_name";
 
 			ResultSet rs = statement.executeQuery(query);
 			
