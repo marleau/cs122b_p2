@@ -6,6 +6,7 @@ home -- random titles; movie by genre; movie by title
 
 
 *ListResults -- displays outcome of search with list of movies, links to movies/stars; sorting and divide by page
+  //Contains static functions for Search Box; Browse Categories; Listing actors and movies;
   by=["title"|"letter"|"genre"|"year"|"director"]
   arg="search string"
   order=["t_a"|"t_d"|"y_a"|"y_d"] //title/year ascending/descending
@@ -28,13 +29,14 @@ Cart -> Cust. Info. -> Confirmation
 
 
 Possible Steps:
+(* Working Code In Place)
 Implement the "Login" Page;
 Implement the "Search" Page;
-Implement the "Movie list" page, including the "Sorting" and "Prev/Next" features;
+*Implement the "Movie list" page, including the "Sorting" and "Prev/Next" features;
 *Implement the "Single Movie" page;
 *Implement the "Single Star" page;
-Implement the "Browsing by movie genre" page;
-Implement the "Browsing by movie title" page;
+*Implement the "Browsing by movie genre" page;
+*Implement the "Browsing by movie title" page;
 Add a "Add to Shopping Cart" button to each movie on all pages;
 Add a "Checkout" button to all pages;
 Implement the page to do checkout.
