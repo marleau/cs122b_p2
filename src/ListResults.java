@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -77,8 +79,23 @@ public class ListResults extends HttpServlet {
 			}
 
 			// ===Argument value
-			if (arg == null || arg.isEmpty()) {
-				arg = " ";// TODO better handle empty search/default page
+			if (arg == null) {
+				arg = "";
+			}
+			if (searchBy.equals("letter")) {
+				if (arg.isEmpty()) {
+					arg = " ";
+				} else {
+					arg = arg.substring(0, 1);// Only take first character for
+					// character search
+				}
+			}
+			if (searchBy.equals("title")){
+		        try {
+		            Pattern.compile(arg);
+		        } catch (PatternSyntaxException exception) {
+		            arg = "";
+		        }
 			}
 
 			// ===SORT
@@ -136,7 +153,11 @@ public class ListResults extends HttpServlet {
 			Statement fullStatement = dbcon.createStatement();
 			String query;
 			String fullQuery;// full search to count results
-			if (searchBy.equals("genre")) {
+			if (arg.isEmpty()) {
+				query = "SELECT DISTINCT * FROM movies " + sortBy + " LIMIT "
+						+ listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT * FROM movies) AS results";
+			} else if (searchBy.equals("genre")) {
 				query = "SELECT DISTINCT * FROM movies m, genres_in_movies g, genres g1 "
 						+ "WHERE g.movie_id=m.id "
 						+ "AND g.genre_id=g1.id "
@@ -152,10 +173,10 @@ public class ListResults extends HttpServlet {
 						+ "AND name = '" + arg + "') as results";
 			} else if (searchBy.equals("letter")) {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '^"
-						+ arg.charAt(0) + "' " + sortBy + " LIMIT " + listStart
-						+ "," + resultsPerPage;
+						+ arg + "' " + sortBy + " LIMIT " + listStart + ","
+						+ resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '^"
-						+ arg.charAt(0) + "') as results";
+						+ arg + "') as results";
 			} else if (searchBy.equals("title")) {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '"
 						+ arg + "' " + sortBy + " LIMIT " + listStart + ","
@@ -192,24 +213,23 @@ public class ListResults extends HttpServlet {
 
 			// TITLE
 			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by " + searchBy
-					+ ": " + arg + "</TITLE></HEAD><BODY>");
+					+ ": " + arg + "</TITLE></HEAD><BODY>");// OPEN HTML
 
-			// Header
-			out.println("<H1>FabFlix</H1><HR>");
-
-			searchTitlesBox(out, resultsPerPage);
+			out.println("<H1>FabFlix</H1>");// HEADER
+			ListResults.searchTitlesBox(out,resultsPerPage);
+			out.println("<HR>");
 
 			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2>");
 
 			out.println("<BR>");
 
 			if (numberOfResults > 0) {// if results exist
-				out.println("( " + numberOfResults + " Results )<BR><BR>");
+				out.println("( " + numberOfResults + " Results )");
+				showRppOptions(out, searchBy, arg, order, page, resultsPerPage);
+				out.println("<BR><BR>");
 				showPageControls(out, searchBy, arg, order, page,
 						resultsPerPage, numberOfPages);
-				out.println("<BR>");
-				showRppOptions(out, searchBy, arg, order, page, resultsPerPage);
-				out.println("<BR>");
+				out.println("<BR><BR>");
 				showSortOptions(out, searchBy, arg, order, page, resultsPerPage);
 			}
 
@@ -228,11 +248,12 @@ public class ListResults extends HttpServlet {
 				out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>"
 						+ title + " (" + year + ")</h2><img src=\"" + bannerURL
 						+ "\"></a><BR>");
-				out.println("ID: <a href=\"MovieDetails?id=" + movieID + "\">"+ movieID +"</a><BR>");
+				out.println("ID: <a href=\"MovieDetails?id=" + movieID + "\">"
+						+ movieID + "</a><BR>");
 				out.println("Year: <a href=\"ListResults?by=year&arg=" + year
 						+ "\">" + year + "</a><BR>");
 				out.println("Director: <a href=\"ListResults?by=director&arg="
-								+ director + "\">" + director + "</a>");
+						+ director + "\">" + director + "</a>");
 
 				out.println("<BR>");
 
@@ -274,14 +295,15 @@ public class ListResults extends HttpServlet {
 			out.println("</BODY></HTML>");
 
 		} catch (SQLException ex) {
+			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
 			while (ex != null) {
-				System.out.println("SQL Exception:  " + ex.getMessage());
+				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
+			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error"
-					+ "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: "
+			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY><P>SQL error in doGet: "
 					+ ex.getMessage() + "<br>" + ex.toString()
 					+ "</P></BODY></HTML>");
 			return;
@@ -324,7 +346,7 @@ public class ListResults extends HttpServlet {
 
 		out.println(" | ");
 
-		if (page != numberOfPages) {
+		if (page < numberOfPages) {
 			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg
 					+ "&page=" + numberOfPages + "&rpp=" + resultsPerPage
 					+ "&order=" + order + "\">Last</a>");
@@ -385,7 +407,8 @@ public class ListResults extends HttpServlet {
 
 	public static void searchTitlesBox(PrintWriter out, Integer resultsPerPage) {
 		// ===Search Box
-		out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles: <INPUT TYPE=\"TEXT\" NAME=\"arg\">"
+		out
+				.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles (RegEx): <INPUT TYPE=\"TEXT\" NAME=\"arg\">"
 						+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\""
 						+ resultsPerPage
 						+ "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\">  </CENTER></FORM>");
@@ -537,19 +560,22 @@ public class ListResults extends HttpServlet {
 		stars.close();
 		statement.close();
 	}
+
 	public static void listMoviesIMG(PrintWriter out, Connection dbcon,
 			Integer starID) throws SQLException {
 		listMoviesIMG(out, dbcon, 0, starID);
 	}
+
 	public static void listMoviesIMG(PrintWriter out, Connection dbcon,
 			Integer rpp, Integer starID) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		out.println("Starred in:<BR><BR>");
-		ResultSet movies = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 "
-				+ "WHERE s.movie_id=m.id "
-				+ "AND s.star_id=s1.id "
-				+ "AND s1.id = '" + starID + "' ORDER BY year DESC");
-		
+		ResultSet movies = statement
+				.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 "
+						+ "WHERE s.movie_id=m.id "
+						+ "AND s.star_id=s1.id "
+						+ "AND s1.id = '" + starID + "' ORDER BY year DESC");
+
 		while (movies.next()) {
 			String title = movies.getString("title");
 			Integer year = movies.getInt("year");
@@ -560,8 +586,7 @@ public class ListResults extends HttpServlet {
 					+ "\"><img src=\"" + bannerURL + "\">" + title + " ("
 					+ year + ")" + "</a><BR><BR>");
 		}
-		
-		
+
 	}
 
 	public static void listGenres(PrintWriter out, Connection dbcon,

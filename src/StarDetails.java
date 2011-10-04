@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -59,7 +58,7 @@ public class StarDetails extends HttpServlet {
 			if (dbcon == null)
 				out.println("dbcon is null.");
 
-			//READ STAR ID
+			// READ STAR ID
 			Integer starID;
 			try {
 				starID = Integer.valueOf(request.getParameter("id"));
@@ -69,8 +68,8 @@ public class StarDetails extends HttpServlet {
 
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
-			String query = "SELECT DISTINCT * FROM stars WHERE id ='"
-					+ starID + "'";
+			String query = "SELECT DISTINCT * FROM stars WHERE id ='" + starID
+					+ "'";
 
 			ResultSet rs = statement.executeQuery(query);
 
@@ -82,8 +81,10 @@ public class StarDetails extends HttpServlet {
 
 				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName
 						+ "</TITLE></HEAD><BODY>");// OPEN HTML
-				out.println("<H1>FabFlix</H1><HR>");// HEADER
+
+				out.println("<H1>FabFlix</H1>");// HEADER
 				ListResults.searchTitlesBox(out);
+				out.println("<HR>");
 
 				out.println("<H1>" + starName + "</H1><br>" + "<img src=\""
 						+ starIMG + "\">" + "<br>" + "Date of Birth: " + dob
@@ -103,16 +104,18 @@ public class StarDetails extends HttpServlet {
 				rs.close();
 				statement.close();
 				dbcon.close();
-			} else {//starID didn't return a star
+			} else {// starID didn't return a star
 				String title = "FabFlix -- Movie Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
 				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
 			}
 		} catch (SQLException ex) {
+			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
 			while (ex != null) {
-				System.out.println("SQL Exception:  " + ex.getMessage());
+				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
+			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
 			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error"

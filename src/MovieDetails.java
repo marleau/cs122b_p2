@@ -79,10 +79,11 @@ public class MovieDetails extends HttpServlet {
 				String trailerURL = rs.getString("trailer_url");
 
 				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title
-						+ "</TITLE></HEAD><BODY>");
-				out.println("<H1>FabFlix</H1><HR>");
+						+ "</TITLE></HEAD><BODY>");// OPEN HTML
 
+				out.println("<H1>FabFlix</H1>");// HEADER
 				ListResults.searchTitlesBox(out);
+				out.println("<HR>");
 
 				out.println("<H2>" + title + "</H2><BR>");
 				out.println("<a href=\"" + trailerURL + "\"><img src=\""
@@ -97,15 +98,15 @@ public class MovieDetails extends HttpServlet {
 				out.println("<BR><BR>");
 
 				ListResults.listStarsIMG(out, dbcon, movieID);
-				
+
 				out.println("<HR>");
-				
+
 				ListResults.browseGenres(out, dbcon);
-				
+
 				out.println("<HR>");
 
 				ListResults.browseTitles(out);
-				
+
 				out.println("</BODY></HTML>");
 				rs.close();
 				statement.close();
@@ -116,10 +117,12 @@ public class MovieDetails extends HttpServlet {
 				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
 			}
 		} catch (SQLException ex) {
+			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
 			while (ex != null) {
-				System.out.println("SQL Exception:  " + ex.getMessage());
+				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
+			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
 			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error"
