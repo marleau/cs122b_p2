@@ -1,5 +1,4 @@
 
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -9,7 +8,6 @@ import java.sql.Statement;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,17 +19,18 @@ import javax.sql.DataSource;
  */
 public class StarDetails extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public StarDetails() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public StarDetails() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -43,7 +42,6 @@ public class StarDetails extends HttpServlet {
 
 		try {
 			Context initCtx = new InitialContext();
-
 			if (initCtx == null)
 				out.println("initCtx is NULL");
 
@@ -61,62 +59,69 @@ public class StarDetails extends HttpServlet {
 			if (dbcon == null)
 				out.println("dbcon is null.");
 
+			//READ STAR ID
+			Integer starID;
+			try {
+				starID = Integer.valueOf(request.getParameter("id"));
+			} catch (Exception e) {
+				starID = 0;
+			}
+
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
-			String query = "SELECT * FROM stars s, stars_in_movies si, movies m "
-					+ "WHERE si.star_id=s.id "
-					+ "AND si.movie_id=m.id "
-					+ "AND s.id ='" + request.getParameter("id")+"' ORDER BY year DESC";
+			String query = "SELECT DISTINCT * FROM stars WHERE id ='"
+					+ starID + "'";
 
 			ResultSet rs = statement.executeQuery(query);
 
-			if (rs.next()) {
-				String starName = rs.getString("first_name") + " " + rs.getString("last_name");
+			if (rs.next()) {// Get star if ID exists
+				String starName = rs.getString("first_name") + " "
+						+ rs.getString("last_name");
 				String starIMG = rs.getString("photo_url");
 				String dob = rs.getString("dob");
 
-				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName + "</TITLE></HEAD>");
-				out.println("<BODY><H1>" + starName + "</H1><br>" + "<img src=\"" + starIMG + "\">"
-						+ "<br>" + "Date of Birth: " + dob + "<br><br>Starred in:<br>");
+				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName
+						+ "</TITLE></HEAD><BODY>");// OPEN HTML
+				out.println("<H1>FabFlix</H1><HR>");// HEADER
+				ListResults.searchTitlesBox(out);
 
-				do {
-					String title = rs.getString("title");
-					Integer year = rs.getInt("year");
-					Integer movieID = rs.getInt("movie_id");
+				out.println("<H1>" + starName + "</H1><br>" + "<img src=\""
+						+ starIMG + "\">" + "<br>" + "Date of Birth: " + dob
+						+ "<br><br>");// STAR DETAILS
 
-					String bannerURL = rs.getString("banner_url");
-					
-					out.println("<a href=\"MovieDetails?id="
-							+ movieID + "\"><img src=\"" + bannerURL + "\">"
-							+ title+" ("+year+")"+"</a><br><br>");
-					
-				} while (rs.next());
+				ListResults.listMoviesIMG(out, dbcon, starID);
+
+				out.println("<HR>");
+
+				ListResults.browseGenres(out, dbcon);
+
+				out.println("<HR>");
+
+				ListResults.browseTitles(out);
+
 				out.println("</BODY></HTML>");
-	              rs.close();
-	              statement.close();
-	              dbcon.close();
-			} else {
+				rs.close();
+				statement.close();
+				dbcon.close();
+			} else {//starID didn't return a star
 				String title = "FabFlix -- Movie Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
 				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
 			}
-		} catch (NamingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (SQLException ex) {
+			while (ex != null) {
+				System.out.println("SQL Exception:  " + ex.getMessage());
+				ex = ex.getNextException();
+			} // end while
+		} // end catch SQLException
+		catch (java.lang.Exception ex) {
+			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error"
+					+ "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: "
+					+ ex.getMessage() + "<br>" + ex.toString()
+					+ "</P></BODY></HTML>");
+			return;
 		}
-        out.close();
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);// post same as get
+		out.close();
 	}
 
 }
