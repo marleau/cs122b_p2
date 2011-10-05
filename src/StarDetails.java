@@ -86,10 +86,11 @@ public class StarDetails extends HttpServlet {
 				ListResults.searchTitlesBox(out);
 				out.println("<HR>");
 
-				out.println("<H1>" + starName + "</H1><br>" + "<img src=\""
-						+ starIMG + "\">" + "<br>" + "Date of Birth: " + dob
-						+ "<br><br>");// STAR DETAILS
-
+				out.println("<H1>" + starName + "</H1><BR>" + "<img src=\""
+						+ starIMG + "\">" + "<BR>");
+				out.println("ID: " + starID + "<BR>");// STAR DETAILS
+				out.println("Date of Birth: " + dob+ "<BR><BR>");
+				
 				ListResults.listMoviesIMG(out, dbcon, starID);
 
 				out.println("<HR>");

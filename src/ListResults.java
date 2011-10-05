@@ -453,28 +453,28 @@ public class ListResults extends HttpServlet {
 			Integer resultsPerPage) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		// ===GENRE browser
-		out.println("Browse Genres: ");
-		int col = 0;
+		out.println("Browse Genres: <BR>");
+		int col = 0; //fix width of display
 		ResultSet allGenre = statement
 				.executeQuery("SELECT DISTINCT name FROM genres ORDER BY name");
 		if (allGenre.next()) {
-			col++;
 			String genreName = allGenre.getString("name");
+			col += genreName.length();
 			out.println("<a href=\"ListResults?by=genre&arg=" + genreName
 					+ "&page=1&rpp=" + resultsPerPage + "\">" + genreName
 					+ "</a>");
 			while (allGenre.next()) {
-				col++;
 				genreName = allGenre.getString("name");
+				col += genreName.length();
 				out.println(" | <a href=\"ListResults?by=genre&arg="
 						+ genreName + "&page=1&rpp=" + resultsPerPage + "\">"
 						+ genreName + "</a>");
-				if (col >= 10 && allGenre.next()) {
+				if (col >= 75 && allGenre.next()) { // column character width
 					genreName = allGenre.getString("name");
 					out.println("<br><a href=\"ListResults?by=genre&arg="
 							+ genreName + "&page=1&rpp=" + resultsPerPage
 							+ "\">" + genreName + "</a>");
-					col = 1;
+					col = genreName.length();
 				}// 10 items per row
 			}
 		}
@@ -488,7 +488,7 @@ public class ListResults extends HttpServlet {
 
 	public static void browseTitles(PrintWriter out, Integer resultsPerPage) {
 		// ===Letter Browser
-		out.println("Browse Titles: ");
+		out.println("Browse Titles: <BR>");
 		String alphaNum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for (int i = 0; i < alphaNum.length(); i++) {
 			if (i != 0) {
