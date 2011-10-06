@@ -35,16 +35,14 @@ public class ListResults extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		LoginPage.kickNonUsers(request, response);// kick if not logged in
 
-		LoginPage.kickNonUsers(request, response);//kick if not logged in
-		
 		response.setContentType("text/html"); // Response mime type
 
 		// Output stream to STDOUT
 		PrintWriter out = response.getWriter();
 
 		try {
-
 
 			// Open context for mySQL pooling
 			Context initCtx = new InitialContext();
@@ -74,7 +72,7 @@ public class ListResults extends HttpServlet {
 
 			// ===Search By
 			try {
-				if (!(searchBy.equals("title") || searchBy.equals("letter") || searchBy.equals("genre") || searchBy.equals("year") || searchBy.equals("director"))) {
+				if (!(searchBy.equals("title") || searchBy.equals("letter") || searchBy.equals("genre") || searchBy.equals("year") || searchBy.equals("director") || searchBy.equals("first_name") || searchBy.equals("last_name"))) {
 					searchBy = "title";
 				}
 			} catch (NullPointerException e) {
@@ -160,14 +158,19 @@ public class ListResults extends HttpServlet {
 				query = "SELECT DISTINCT * FROM movies " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT * FROM movies) AS results";
 			} else if (searchBy.equals("genre")) {
-				query = "SELECT DISTINCT * FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id " + "AND g.genre_id=g1.id " + "AND name = '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id " + "AND g.genre_id=g1.id " + "AND name = '" + arg + "') as results";
+				query = "SELECT DISTINCT * FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id " + "AND g.genre_id=g1.id " + "AND name = '"
+						+ arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id "
+						+ "AND g.genre_id=g1.id " + "AND name = '" + arg + "') as results";
 			} else if (searchBy.equals("letter")) {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '^" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '^" + arg + "') as results";
 			} else if (searchBy.equals("title")) {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '" + arg + "') as results";
+			} else if (searchBy.equals("first_name") || searchBy.equals("last_name")) {
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND "+searchBy+" = '"+ arg +"' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND "+searchBy+" = '"+ arg +"') as results";
 			} else {
 				query = "SELECT DISTINCT * FROM movies m WHERE " + searchBy + " = '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + arg + "') as results";
@@ -185,7 +188,8 @@ public class ListResults extends HttpServlet {
 			// Adjust page if beyond scope of the results; redirect to last page
 			// of search
 			if (numberOfResults > 0 && page > numberOfPages) {
-				response.sendRedirect("ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order);
+				response.sendRedirect("ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + numberOfPages + "&rpp="
+						+ resultsPerPage + "&order=" + order);
 			}
 
 			// ===Start Writing Page===========================================
@@ -194,10 +198,7 @@ public class ListResults extends HttpServlet {
 			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by " + searchBy + ": " + arg + "</TITLE></HEAD><BODY>");
 			// BODY
 
-			out.println("<H1>FabFlix</H1>");// HEADER
-			ListResults.searchTitlesBox(out, resultsPerPage);
-			Logout.button(out);
-			out.println("<HR>");
+			header(out, resultsPerPage);
 
 			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2>");
 
@@ -207,7 +208,7 @@ public class ListResults extends HttpServlet {
 				out.println("( " + numberOfResults + " Results )");
 				showRppOptions(out, searchBy, arg, order, page, resultsPerPage);
 				out.println("<BR><BR>");
-				if (numberOfPages > 1){
+				if (numberOfPages > 1) {
 					showPageControls(out, searchBy, arg, order, page, resultsPerPage, numberOfPages);
 					out.println("<BR><BR>");
 				}
@@ -228,8 +229,8 @@ public class ListResults extends HttpServlet {
 
 				out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR>");
 				out.println("ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
-				listByYearLink(out, year);
-				listByDirectorLink(out, director);
+				listByYearLink(out, year,resultsPerPage);
+				listByDirectorLink(out, director,resultsPerPage);
 
 				out.println("<BR>");
 
@@ -244,7 +245,7 @@ public class ListResults extends HttpServlet {
 
 			if (numberOfResults > 0) {
 				// show prev/next
-				if (numberOfPages > 1){
+				if (numberOfPages > 1) {
 					showPageControls(out, searchBy, arg, order, page, resultsPerPage, numberOfPages);
 				}
 				out.println("<BR>");
@@ -258,14 +259,11 @@ public class ListResults extends HttpServlet {
 				out.println("<H3>No Results.</H3><hr>");
 			}
 
-			browseGenres(out, dbcon, resultsPerPage);
-
-			out.println("<HR>");
-
-			browseTitles(out, resultsPerPage);
+			footer(out, dbcon, resultsPerPage);
 
 			searchResults.close();
 			statement.close();
+			fullStatement.close();
 			dbcon.close();
 
 			out.println("</BODY></HTML>");
@@ -279,25 +277,53 @@ public class ListResults extends HttpServlet {
 			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY><P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString() + "</P></BODY></HTML>");
+			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY><P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString()
+					+ "</P></BODY></HTML>");
 			return;
 		}
 		out.close();
 	}
 
+	public static void footer(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException {
+		browseGenres(out, dbcon, resultsPerPage);
+
+		out.println("<HR>");
+
+		browseTitles(out, resultsPerPage);
+	}
+
+	public static void header(PrintWriter out, Integer resultsPerPage) {
+		out.println("<a href=\"/Fabflix/ListResults\"><H1>FabFlix</H1></a>");
+		// TODO Fabflix link home
+		ListResults.searchTitlesBox(out, resultsPerPage);
+		Logout.button(out);
+		out.println("<HR>");
+	}
+
 	public static void listByYearLink(PrintWriter out, Integer year) {
-		out.println("Year: <a href=\"ListResults?by=year&arg=" + year + "\">" + year + "</a><BR>");
+		listByYearLink(out, year, 0);
+	}
+
+	public static void listByYearLink(PrintWriter out, Integer year, Integer rpp) {
+		out.println("Year: <a href=\"ListResults?by=year&arg=" + year + "&rpp=" + rpp + "\">" + year + "</a><BR>");
 	}
 
 	public static void listByDirectorLink(PrintWriter out, String director) throws UnsupportedEncodingException {
-		out.println("Director: <a href=\"ListResults?by=director&arg=" + java.net.URLEncoder.encode(director, "UTF-8") + "\">" + director + "</a>");
+		listByDirectorLink(out, director, 0);
 	}
 
-	private void showPageControls(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage, Integer numberOfPages) throws UnsupportedEncodingException {
+	public static void listByDirectorLink(PrintWriter out, String director, Integer rpp) throws UnsupportedEncodingException {
+		out.println("Director: <a href=\"ListResults?by=director&arg=" + java.net.URLEncoder.encode(director, "UTF-8") + "&rpp=" + rpp + "\">" + director
+				+ "</a>");
+	}
+
+	private void showPageControls(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage, Integer numberOfPages)
+			throws UnsupportedEncodingException {
 		// ===Paging
 
 		if (page != 1) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "&order=" + order + "\">First</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=1&rpp=" + resultsPerPage
+					+ "&order=" + order + "\">First</a>");
 		} else {
 			out.println("Last");
 		}
@@ -305,7 +331,8 @@ public class ListResults extends HttpServlet {
 		out.println(" | ");
 
 		if (page > 1) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + (page - 1) + "&rpp=" + resultsPerPage + "&order=" + order + "\">Prev</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + (page - 1) + "&rpp="
+					+ resultsPerPage + "&order=" + order + "\">Prev</a>");
 		} else {
 			out.println("Prev");
 		}
@@ -315,24 +342,28 @@ public class ListResults extends HttpServlet {
 		if (page >= numberOfPages) {
 			out.println("Next");
 		} else {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + (page + 1) + "&rpp=" + resultsPerPage + "&order=" + order + "\">Next</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + (page + 1) + "&rpp="
+					+ resultsPerPage + "&order=" + order + "\">Next</a>");
 		}
 
 		out.println(" | ");
 
 		if (page < numberOfPages) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order + "\">Last</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + numberOfPages + "&rpp="
+					+ resultsPerPage + "&order=" + order + "\">Last</a>");
 		} else {
 			out.println("Last");
 		}
 	}
 
-	private void showSortOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage) throws UnsupportedEncodingException {
+	private void showSortOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage)
+			throws UnsupportedEncodingException {
 		// sorting and results per page options
 		out.println("Sort by: Title(");
 
 		if (!order.equals("t_a")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=" + resultsPerPage + "&order=t_a\">asc</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
+					+ resultsPerPage + "&order=t_a\">asc</a>");
 		} else {
 			out.println("asc");
 		}
@@ -340,7 +371,8 @@ public class ListResults extends HttpServlet {
 		out.println(")(");
 
 		if (!order.equals("t_d")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=" + resultsPerPage + "&order=t_d\">des</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
+					+ resultsPerPage + "&order=t_d\">des</a>");
 		} else {
 			out.println("des");
 		}
@@ -348,7 +380,8 @@ public class ListResults extends HttpServlet {
 		out.println(") Year(");
 
 		if (!order.equals("y_a")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=" + resultsPerPage + "&order=y_a\">asc</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
+					+ resultsPerPage + "&order=y_a\">asc</a>");
 		} else {
 			out.println("asc");
 		}
@@ -356,7 +389,8 @@ public class ListResults extends HttpServlet {
 		out.println(")(");
 
 		if (!order.equals("y_d")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=" + resultsPerPage + "&order=y_d\">des</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
+					+ resultsPerPage + "&order=y_d\">des</a>");
 		} else {
 			out.println("des");
 		}
@@ -370,29 +404,36 @@ public class ListResults extends HttpServlet {
 
 	public static void searchTitlesBox(PrintWriter out, Integer resultsPerPage) {
 		// ===Search Box
-		out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles (RegEx): <INPUT TYPE=\"TEXT\" NAME=\"arg\">" + "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage + "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\">  </CENTER></FORM>");
+		out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles (RegEx): <INPUT TYPE=\"TEXT\" NAME=\"arg\">"
+				+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage + "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\">");
+		AdvancedSearch.advancedSearchButton(out);
+		out.println("</FORM>");
 	}
 
-	private void showRppOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage) throws UnsupportedEncodingException {
+	private void showRppOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage)
+			throws UnsupportedEncodingException {
 		// ===Results per page
 		// TODO maybe adjust page number when changing number of results to keep
 		// centered
 		out.println("Results per page: ");
 
 		if (!(resultsPerPage == 5)) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=5&order=" + order + "\">5</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=5&order=" + order
+					+ "\">5</a>");
 		} else {
 			out.println("5");
 		}
 
 		if (!(resultsPerPage == 25)) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=25&order=" + order + "\">25</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=25&order="
+					+ order + "\">25</a>");
 		} else {
 			out.println("25");
 		}
 
 		if (!(resultsPerPage == 100)) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=100&order=" + order + "\">100</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=100&order="
+					+ order + "\">100</a>");
 		} else {
 			out.println("100");
 		}
@@ -451,7 +492,8 @@ public class ListResults extends HttpServlet {
 		Statement statement = dbcon.createStatement();
 		// ===STARS; comma separated list
 		out.println("Stars: ");
-		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id " + "AND s.star_id=s1.id " + "AND m.id = '" + movieID + "' ORDER BY last_name");
+		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
+				+ "AND s.star_id=s1.id " + "AND m.id = '" + movieID + "' ORDER BY last_name");
 		if (stars.next()) {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
 			String starID = stars.getString("star_id");
@@ -474,7 +516,8 @@ public class ListResults extends HttpServlet {
 		Statement statement = dbcon.createStatement();
 		// ===STARS; list of images
 		out.println("Stars: <BR><BR>");
-		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id " + "AND s.star_id=s1.id " + "AND m.id = '" + movieID + "' ORDER BY last_name");
+		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
+				+ "AND s.star_id=s1.id " + "AND m.id = '" + movieID + "' ORDER BY last_name");
 		while (stars.next()) {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
 			String starIMG = stars.getString("photo_url");
@@ -492,7 +535,8 @@ public class ListResults extends HttpServlet {
 	public static void listMoviesIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer starID) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		out.println("Starred in:<BR><BR>");
-		ResultSet movies = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id " + "AND s.star_id=s1.id " + "AND s1.id = '" + starID + "' ORDER BY year DESC");
+		ResultSet movies = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
+				+ "AND s.star_id=s1.id " + "AND s1.id = '" + starID + "' ORDER BY year DESC");
 
 		while (movies.next()) {
 			String title = movies.getString("title");
@@ -513,7 +557,8 @@ public class ListResults extends HttpServlet {
 		// ===GENRES; comma separated list
 		out.println("Genre: ");
 		Statement statement = dbcon.createStatement();
-		ResultSet genres = statement.executeQuery("SELECT DISTINCT name " + "FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id " + "AND g.genre_id=g1.id " + "AND m.id ='" + movieID + "' ORDER BY name");
+		ResultSet genres = statement.executeQuery("SELECT DISTINCT name " + "FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id "
+				+ "AND g.genre_id=g1.id " + "AND m.id ='" + movieID + "' ORDER BY name");
 		if (genres.next()) {
 			String genre = genres.getString("name").trim();
 			out.println("<a href=\"ListResults?by=genre&arg=" + genre + "&rpp=" + rpp + "\">" + genre + "</a>");

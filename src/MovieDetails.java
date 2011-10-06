@@ -83,10 +83,10 @@ public class MovieDetails extends HttpServlet {
 				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title
 						+ "</TITLE></HEAD><BODY>");// OPEN HTML
 
-				out.println("<H1>FabFlix</H1>");// HEADER
-				ListResults.searchTitlesBox(out);
-				Logout.button(out);
+				ListResults.header(out,0);
+				
 				out.println("<HR>");
+				
 				//Movie Info
 				out.println("<H2>" + title + " ("+year+")</H2><BR>");
 				out.println("<a href=\"" + trailerURL + "\"><img src=\""
@@ -103,20 +103,18 @@ public class MovieDetails extends HttpServlet {
 
 				out.println("<HR>");//Footer
 
-				ListResults.browseGenres(out, dbcon);
-
-				out.println("<HR>");
-
-				ListResults.browseTitles(out);
+				ListResults.footer(out,dbcon,0);
 
 				out.println("</BODY></HTML>");
 				rs.close();
 				statement.close();
 				dbcon.close();
 			} else {
-				String title = "FabFlix -- Movie Not Found";
-				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
-				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
+				String title = "Movie Not Found";
+				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title + "</TITLE></HEAD>");
+				ListResults.header(out,0);
+				out.println("<BODY><H1>" + title +"</H1></BODY></HTML>");
+				ListResults.footer(out, dbcon, 0);
 			}
 		} catch (SQLException ex) {
 			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");

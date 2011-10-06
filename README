@@ -1,6 +1,8 @@
-Header.html -- contains site banner image;links to Home, Adv. Search, Sign In, My Cart; Search Box; Same for every page
+index.html -- Welcome page for site, login form
 
-LoginPage -- read user/pass and track user; use HTTP POST
+*LoginPage -- read user/pass and track user; use HTTP POST
+*Logout -- log user out and redirect them to index.html
+
 
 home -- random titles; movie by genre; movie by title
 
@@ -30,7 +32,7 @@ Cart -> Cust. Info. -> Confirmation
 
 Possible Steps:
 (* Working Code In Place)
-Implement the "Login" Page;
+*Implement the "Login" Page;
 Implement the "Search" Page;
 *Implement the "Movie list" page, including the "Sorting" and "Prev/Next" features;
 *Implement the "Single Movie" page;

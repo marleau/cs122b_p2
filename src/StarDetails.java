@@ -83,10 +83,7 @@ public class StarDetails extends HttpServlet {
 				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName
 						+ "</TITLE></HEAD><BODY>");// OPEN HTML
 
-				out.println("<H1>FabFlix</H1>");// HEADER
-				ListResults.searchTitlesBox(out);
-				Logout.button(out);
-				out.println("<HR>");
+				ListResults.header(out,0);
 
 				//Star Details
 				out.println("<H1>" + starName + "</H1><BR>" + "<img src=\""
@@ -98,11 +95,7 @@ public class StarDetails extends HttpServlet {
 
 				out.println("<HR>");//Footer
 
-				ListResults.browseGenres(out, dbcon);
-
-				out.println("<HR>");
-
-				ListResults.browseTitles(out);
+				ListResults.footer(out,dbcon,0);
 
 				out.println("</BODY></HTML>");
 				rs.close();
@@ -111,7 +104,9 @@ public class StarDetails extends HttpServlet {
 			} else {// starID didn't return a star
 				String title = "FabFlix -- Star Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
-				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
+				ListResults.header(out,0);
+				out.println("<BODY><H1>" + title +"</H1></BODY></HTML>");
+				ListResults.footer(out, dbcon, 0);
 			}
 		} catch (SQLException ex) {
 			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
