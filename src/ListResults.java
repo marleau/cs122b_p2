@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -184,7 +185,7 @@ public class ListResults extends HttpServlet {
 			// Adjust page if beyond scope of the results; redirect to last page
 			// of search
 			if (numberOfResults > 0 && page > numberOfPages) {
-				response.sendRedirect("ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order);
+				response.sendRedirect("ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order);
 			}
 
 			// ===Start Writing Page===========================================
@@ -221,14 +222,14 @@ public class ListResults extends HttpServlet {
 					movieID = 0;
 				}
 				String title = searchResults.getString("title");
-				String year = searchResults.getString("year");
+				Integer year = searchResults.getInt("year");
 				String bannerURL = searchResults.getString("banner_url");
 				String director = searchResults.getString("director");
 
 				out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR>");
 				out.println("ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
-				out.println("Year: <a href=\"ListResults?by=year&arg=" + year + "\">" + year + "</a><BR>");
-				out.println("Director: <a href=\"ListResults?by=director&arg=" + director + "\">" + director + "</a>");
+				listByYearLink(out, year);
+				listByDirectorLink(out, director);
 
 				out.println("<BR>");
 
@@ -284,11 +285,19 @@ public class ListResults extends HttpServlet {
 		out.close();
 	}
 
-	private void showPageControls(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage, Integer numberOfPages) {
+	public static void listByYearLink(PrintWriter out, Integer year) {
+		out.println("Year: <a href=\"ListResults?by=year&arg=" + year + "\">" + year + "</a><BR>");
+	}
+
+	public static void listByDirectorLink(PrintWriter out, String director) throws UnsupportedEncodingException {
+		out.println("Director: <a href=\"ListResults?by=director&arg=" + java.net.URLEncoder.encode(director, "UTF-8") + "\">" + director + "</a>");
+	}
+
+	private void showPageControls(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage, Integer numberOfPages) throws UnsupportedEncodingException {
 		// ===Paging
 
 		if (page != 1) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=1&rpp=" + resultsPerPage + "&order=" + order + "\">First</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "&order=" + order + "\">First</a>");
 		} else {
 			out.println("Last");
 		}
@@ -296,7 +305,7 @@ public class ListResults extends HttpServlet {
 		out.println(" | ");
 
 		if (page > 1) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + (page - 1) + "&rpp=" + resultsPerPage + "&order=" + order + "\">Prev</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + (page - 1) + "&rpp=" + resultsPerPage + "&order=" + order + "\">Prev</a>");
 		} else {
 			out.println("Prev");
 		}
@@ -306,24 +315,24 @@ public class ListResults extends HttpServlet {
 		if (page >= numberOfPages) {
 			out.println("Next");
 		} else {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + (page + 1) + "&rpp=" + resultsPerPage + "&order=" + order + "\">Next</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + (page + 1) + "&rpp=" + resultsPerPage + "&order=" + order + "\">Next</a>");
 		}
 
 		out.println(" | ");
 
 		if (page < numberOfPages) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order + "\">Last</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order + "\">Last</a>");
 		} else {
 			out.println("Last");
 		}
 	}
 
-	private void showSortOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage) {
+	private void showSortOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage) throws UnsupportedEncodingException {
 		// sorting and results per page options
 		out.println("Sort by: Title(");
 
 		if (!order.equals("t_a")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + page + "&rpp=" + resultsPerPage + "&order=t_a\">asc</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=" + resultsPerPage + "&order=t_a\">asc</a>");
 		} else {
 			out.println("asc");
 		}
@@ -331,7 +340,7 @@ public class ListResults extends HttpServlet {
 		out.println(")(");
 
 		if (!order.equals("t_d")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + page + "&rpp=" + resultsPerPage + "&order=t_d\">des</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=" + resultsPerPage + "&order=t_d\">des</a>");
 		} else {
 			out.println("des");
 		}
@@ -339,7 +348,7 @@ public class ListResults extends HttpServlet {
 		out.println(") Year(");
 
 		if (!order.equals("y_a")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + page + "&rpp=" + resultsPerPage + "&order=y_a\">asc</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=" + resultsPerPage + "&order=y_a\">asc</a>");
 		} else {
 			out.println("asc");
 		}
@@ -347,7 +356,7 @@ public class ListResults extends HttpServlet {
 		out.println(")(");
 
 		if (!order.equals("y_d")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + page + "&rpp=" + resultsPerPage + "&order=y_d\">des</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=" + resultsPerPage + "&order=y_d\">des</a>");
 		} else {
 			out.println("des");
 		}
@@ -364,26 +373,26 @@ public class ListResults extends HttpServlet {
 		out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles (RegEx): <INPUT TYPE=\"TEXT\" NAME=\"arg\">" + "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage + "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\">  </CENTER></FORM>");
 	}
 
-	private void showRppOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage) {
+	private void showRppOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage) throws UnsupportedEncodingException {
 		// ===Results per page
 		// TODO maybe adjust page number when changing number of results to keep
 		// centered
 		out.println("Results per page: ");
 
 		if (!(resultsPerPage == 5)) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + page + "&rpp=5&order=" + order + "\">5</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=5&order=" + order + "\">5</a>");
 		} else {
 			out.println("5");
 		}
 
 		if (!(resultsPerPage == 25)) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + page + "&rpp=25&order=" + order + "\">25</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=25&order=" + order + "\">25</a>");
 		} else {
 			out.println("25");
 		}
 
 		if (!(resultsPerPage == 100)) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + arg + "&page=" + page + "&rpp=100&order=" + order + "\">100</a>");
+			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp=100&order=" + order + "\">100</a>");
 		} else {
 			out.println("100");
 		}
