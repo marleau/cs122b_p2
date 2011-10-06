@@ -1,12 +1,18 @@
-
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 /**
  * Servlet implementation class LoginPage
@@ -19,64 +25,113 @@ public class LoginPage extends HttpServlet {
 	 */
 	public LoginPage() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
+
 		PrintWriter out = response.getWriter();
-		String title = "FabFlix Login";
-		String docType = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 "
-				+ "Transitional//EN\">\n";
-		out.println(docType + "<HTML>\n" + "<HEAD><TITLE>" + title
-				+ "</TITLE></HEAD>\n" + "<BODY BGCOLOR=\"#FDF5E6\">\n" + "<H1>"
-				+ title + "</H1>");
 
-		HttpSession session = request.getSession(true);
+		HttpSession session = request.getSession(true);// Get client session
 
-		String account = request.getParameter("account");
+		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 
-		if (!validUser(account, password)) {
-			out.println("<HTML><HEAD><TITLE>Access Denied</TITLE></HEAD>");
-			out.println("<BODY>Your login and password are invalid.<BR>");
-			out
-					.println("You may want to <A HREF=\"/login.html\">try again</A>");
+		if (!validUser(email, password)) {
+			out.println("<HTML><HEAD><TITLE>Login Failed</TITLE></HEAD>");
+			out.println("<BODY>Your email and password are invalid.<BR>");
+			out.println("<A HREF=\"/Fabflix/\">try again</A>");
 			out.println("</BODY></HTML>");
 		} else {
-			// Valid login. Make a note in the session object.
 			session = request.getSession();
-			session.setAttribute("logon.isDone", account);
-			// Try redirecting the client to the page he first tried to access
+			session.setAttribute("user.login", email);
 			try {
-				String target = (String) session.getAttribute("login.target");//TODO store address if user goes to a page w/o logging in
+				String target = (String) session.getAttribute("user.dest");
+				// TODO store address if user goes to a page w/o logging in
 				if (target != null) {
+					session.removeAttribute("user.dest");
 					response.sendRedirect(target);
 					return;
 				}
 			} catch (Exception ignored) {
 			}
 
-			// Couldn't redirect to the target. Redirect to the site's home
-			// page.
-			response.sendRedirect("/Fabflix/ListResults");//TODO Go to home page once designed
+			// Couldn't redirect to the target. Redirect to the site's homepage.
+			response.sendRedirect("/Fabflix/ListResults");
+			// TODO Go to home page once designed
 
 		}
 
 	}
-	
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		//doPost(request, response); //DEBUG must only do post
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.sendRedirect("/Fabflix/");
 	}
 
-	private boolean validUser(String account, String password) {
+	private boolean validUser(String email, String password) {
 		// TODO Validate user
-		return true;
+		try {
+			Context initCtx = new InitialContext();
+			if (initCtx == null)
+				System.out.println("initCtx is NULL");
+
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			if (envCtx == null)
+				System.out.println("envCtx is NULL");
+
+			// Look up our data source
+			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
+
+			if (ds == null)
+				System.out.println("ds is null.");
+
+			Connection dbcon = ds.getConnection();
+			if (dbcon == null)
+				System.out.println("dbcon is null.");
+
+			Statement statement = dbcon.createStatement();
+			String query = "SELECT * FROM customers c WHERE email = '" + email + "' AND password = '" + password + "'";
+
+			ResultSet rs = statement.executeQuery(query);
+			if (rs.next()) {// IF person exists with that password
+				return true;// then log in
+			}
+
+		} catch (SQLException ex) {
+			System.out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
+			while (ex != null) {
+				System.out.println("SQL Exception:  " + ex.getMessage());
+				ex = ex.getNextException();
+			} // end while
+			System.out.println("</BODY></HTML>");
+		} // end catch SQLException
+		catch (java.lang.Exception ex) {
+			System.out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error" + "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString() + "</P></BODY></HTML>");
+		}
+
+		return false;
+	}
+	
+	public static void kickNonUsers(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		//Validate user
+		HttpSession session = request.getSession();// Get client session
+
+		String user = (String) session.getAttribute("user.login");
+		// Check login
+		if (user == null ) {// FIXME
+			String URL = request.getRequestURL().toString();
+			String qs = request.getQueryString();
+			if (qs != null) {
+				URL += "?" + qs;
+			}
+			//Save destination till after logged in
+			session.setAttribute("user.dest", URL);
+			response.sendRedirect("/Fabflix/");
+			// send to login page if not logged in
+		}
 	}
 }

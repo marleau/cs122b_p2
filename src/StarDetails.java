@@ -33,6 +33,7 @@ public class StarDetails extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		LoginPage.kickNonUsers(request, response);//kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -84,8 +85,10 @@ public class StarDetails extends HttpServlet {
 
 				out.println("<H1>FabFlix</H1>");// HEADER
 				ListResults.searchTitlesBox(out);
+				Logout.button(out);
 				out.println("<HR>");
 
+				//Star Details
 				out.println("<H1>" + starName + "</H1><BR>" + "<img src=\""
 						+ starIMG + "\">" + "<BR>");
 				out.println("ID: " + starID + "<BR>");// STAR DETAILS
@@ -93,7 +96,7 @@ public class StarDetails extends HttpServlet {
 				
 				ListResults.listMoviesIMG(out, dbcon, starID);
 
-				out.println("<HR>");
+				out.println("<HR>");//Footer
 
 				ListResults.browseGenres(out, dbcon);
 
@@ -106,7 +109,7 @@ public class StarDetails extends HttpServlet {
 				statement.close();
 				dbcon.close();
 			} else {// starID didn't return a star
-				String title = "FabFlix -- Movie Not Found";
+				String title = "FabFlix -- Star Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
 				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
 			}

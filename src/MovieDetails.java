@@ -31,6 +31,8 @@ public class MovieDetails extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
+		LoginPage.kickNonUsers(request, response);//kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -83,8 +85,9 @@ public class MovieDetails extends HttpServlet {
 
 				out.println("<H1>FabFlix</H1>");// HEADER
 				ListResults.searchTitlesBox(out);
+				Logout.button(out);
 				out.println("<HR>");
-
+				//Movie Info
 				out.println("<H2>" + title + " ("+year+")</H2><BR>");
 				out.println("<a href=\"" + trailerURL + "\"><img src=\""
 						+ bannerURL + "\"><br>Trailer</a><BR><BR>");
@@ -100,7 +103,7 @@ public class MovieDetails extends HttpServlet {
 
 				ListResults.listStarsIMG(out, dbcon, movieID);
 
-				out.println("<HR>");
+				out.println("<HR>");//Footer
 
 				ListResults.browseGenres(out, dbcon);
 
