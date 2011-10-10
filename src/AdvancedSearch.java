@@ -61,7 +61,7 @@ public class AdvancedSearch extends HttpServlet {
 
 			// Get parameters
 			String t = request.getParameter("t");
-			Integer y=0;
+			Integer y = 0;
 			try {
 				y = Integer.valueOf(request.getParameter("y"));
 			} catch (Exception e) {
@@ -70,9 +70,7 @@ public class AdvancedSearch extends HttpServlet {
 			String d = request.getParameter("d");
 			String fn = request.getParameter("fn");
 			String ln = request.getParameter("ln");
-			
 
-			
 			// ===SORT
 			String sortBy = "";
 			String order = request.getParameter("order");
@@ -129,59 +127,55 @@ public class AdvancedSearch extends HttpServlet {
 			Integer paramCount = 0;
 			if (!(t == null || t.isEmpty())) {
 				paramCount++;
-			}else {
-				t="";
+			} else {
+				t = "";
 			}
 			if (y != 0) {
 				paramCount++;
 			}
 			if (!(d == null || d.isEmpty())) {
 				paramCount++;
-			}else {
-				d="";
+			} else {
+				d = "";
 			}
 			if (!(fn == null || fn.isEmpty())) {
 				paramCount++;
-			}else {
-				fn="";
+			} else {
+				fn = "";
 			}
 			if (!(ln == null || ln.isEmpty())) {
 				paramCount++;
-			}else {
-				ln="";
+			} else {
+				ln = "";
 			}
-			
-			String searchString = "t=" + java.net.URLEncoder.encode(t, "UTF-8") + "" +
-			"&y=" + y +
-			"&d=" + java.net.URLEncoder.encode(d, "UTF-8") +
-			"&fn=" +java.net.URLEncoder.encode(fn, "UTF-8") +
-			"&ln=" +java.net.URLEncoder.encode(ln, "UTF-8");
+
+			String searchString = "t=" + java.net.URLEncoder.encode(t, "UTF-8") + "" + "&y=" + y + "&d=" + java.net.URLEncoder.encode(d, "UTF-8") + "&fn="
+					+ java.net.URLEncoder.encode(fn, "UTF-8") + "&ln=" + java.net.URLEncoder.encode(ln, "UTF-8");
 
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
-				//===Advanced Search Form
+				// ===Advanced Search Form
 				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
-				ListResults.header(out, resultsPerPage);
-				out.println("Advanced Search: ");//TODO make form
-				out.println("<FORM ACTION=\"AdvancedSearch\" METHOD=\"GET\">" +
-						"Title: <INPUT TYPE=\"TEXT\" NAME=\"t\"><BR>" +
-						"Year: <INPUT TYPE=\"TEXT\" NAME=\"y\"><BR>" +
-						"Director: <INPUT TYPE=\"TEXT\" NAME=\"d\"><BR>" +
-						"Star's First Name: <INPUT TYPE=\"TEXT\" NAME=\"fn\"><BR>" +
-						"Star's Last Name: <INPUT TYPE=\"TEXT\" NAME=\"ln\"><BR>" + "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage + "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\"> <INPUT TYPE=\"RESET\" VALUE=\"Reset\"> </FORM>");
+				ListResults.header(request, out, resultsPerPage);
+				out.println("Advanced Search: ");
+				out.println("<FORM ACTION=\"AdvancedSearch\" METHOD=\"GET\">" + "Title: <INPUT TYPE=\"TEXT\" NAME=\"t\"><BR>"
+						+ "Year: <INPUT TYPE=\"TEXT\" NAME=\"y\"><BR>" + "Director: <INPUT TYPE=\"TEXT\" NAME=\"d\"><BR>"
+						+ "Star's First Name: <INPUT TYPE=\"TEXT\" NAME=\"fn\"><BR>" + "Star's Last Name: <INPUT TYPE=\"TEXT\" NAME=\"ln\"><BR>"
+						+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage
+						+ "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\"> <INPUT TYPE=\"RESET\" VALUE=\"Reset\"> </FORM>");
 				ListResults.footer(out, dbcon, resultsPerPage);
 				out.println("</body></html>");
 			} else if (paramCount == 1) {
-				//Redirect to simple search for single parameter
-				if (!(t == null || t.isEmpty()) ){
+				// Redirect to simple search for single parameter
+				if (!(t == null || t.isEmpty())) {
 					response.sendRedirect("ListResults?by=title&arg=" + java.net.URLEncoder.encode(t, "UTF-8"));
-				} else if ( y != 0 ){
+				} else if (y != 0) {
 					response.sendRedirect("ListResults?by=year&arg=" + y);
-				} else if (!(d == null || d.isEmpty()) ){
+				} else if (!(d == null || d.isEmpty())) {
 					response.sendRedirect("ListResults?by=director&arg=" + java.net.URLEncoder.encode(d, "UTF-8"));
-				} else if (!(fn == null || fn.isEmpty()) ){
+				} else if (!(fn == null || fn.isEmpty())) {
 					response.sendRedirect("ListResults?by=first_name&arg=" + java.net.URLEncoder.encode(fn, "UTF-8"));
-				} else if (!(ln == null || ln.isEmpty()) ){
+				} else if (!(ln == null || ln.isEmpty())) {
 					response.sendRedirect("ListResults?by=last_name&arg=" + java.net.URLEncoder.encode(ln, "UTF-8"));
 				}
 
@@ -192,62 +186,50 @@ public class AdvancedSearch extends HttpServlet {
 				String searchArg = "";
 				String query = "";
 				String fullQuery = "";
-				
-				if (!(t == null || t.isEmpty()) ){
-					searchArg += "AND title LIKE '%"+t+"%' ";
-				}
-				if ( y != 0 ){
-					searchArg += "AND year = "+y+" ";
-				}
-				if (!(d == null || d.isEmpty()) ){
-					searchArg += "AND director = '"+d+"' ";
-				}
-				if (!(fn == null || fn.isEmpty()) ){
-					searchArg += "AND first_name = '"+fn+"' ";
-				}
-				if (!(ln == null || ln.isEmpty()) ){
-					searchArg += "AND last_name = '"+ln+"' ";
-				}
-				
-				//TODO Make correct Queries
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url " +
-						"FROM movies m, stars_in_movies s, stars s1 " +
-						"WHERE s.movie_id=m.id " +
-						"AND s.star_id=s1.id " +
-						searchArg + sortBy + " " +
-								"LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (" +
-						"SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 " +
-						"WHERE s.movie_id=m.id AND s.star_id=s1.id " +
-						searchArg+") as results";
 
+				if (!(t == null || t.isEmpty())) {
+					searchArg += "AND title LIKE '%" + t + "%' ";
+				}
+				if (y != 0) {
+					searchArg += "AND year = " + y + " ";
+				}
+				if (!(d == null || d.isEmpty())) {
+					searchArg += "AND director = '" + d + "' ";
+				}
+				if (!(fn == null || fn.isEmpty())) {
+					searchArg += "AND first_name = '" + fn + "' ";
+				}
+				if (!(ln == null || ln.isEmpty())) {
+					searchArg += "AND last_name = '" + ln + "' ";
+				}
+
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url " + "FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
+						+ "AND s.star_id=s1.id " + searchArg + sortBy + " " + "LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (" + "SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 "
+						+ "WHERE s.movie_id=m.id AND s.star_id=s1.id " + searchArg + ") as results";
 
 				// Get results for this page's display
 				ResultSet searchResults = statement.executeQuery(query);
 
-				
 				// Find total number of results
 				ResultSet fullCount = fullStatement.executeQuery(fullQuery);
 				fullCount.next();
 				int numberOfResults = fullCount.getInt(1);
 				int numberOfPages = numberOfResults / resultsPerPage + (numberOfResults % resultsPerPage == 0 ? 0 : 1);
 
-				// Adjust page if beyond scope of the results; redirect to last page
+				// Adjust page if beyond scope of the results; redirect to last
+				// page
 				// of search
 				if (numberOfResults > 0 && page > numberOfPages) {
-					response.sendRedirect("AdvancedSearch?"+searchString+
-							"&page=" + numberOfPages + "&rpp="
-							+ resultsPerPage + "&order=" + order);
+					response.sendRedirect("AdvancedSearch?" + searchString + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order);
 				}
-				
-				
 
 				// Open HTML
 				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
 				// BODY
-				ListResults.header(out, 0);
-				
-				out.println("<H2>Advanced Search</H2>"); //Show search options
+				ListResults.header(request, out, 0);
+
+				out.println("<H2>Advanced Search</H2>"); // Show search options
 
 				out.println("<BR>");
 
@@ -262,7 +244,7 @@ public class AdvancedSearch extends HttpServlet {
 					showSortOptions(out, searchString, order, page, resultsPerPage);
 				}
 				while (searchResults.next()) {// For each movie, DISPLAY
-												// INFORMATION
+					// INFORMATION
 					Integer movieID;
 					try {
 						movieID = Integer.valueOf(searchResults.getString("id"));
@@ -289,7 +271,7 @@ public class AdvancedSearch extends HttpServlet {
 
 					out.println("<HR>");
 				}
-				
+
 				if (numberOfResults > 0) {
 					// show prev/next
 					if (numberOfPages > 1) {
@@ -330,13 +312,13 @@ public class AdvancedSearch extends HttpServlet {
 		out.close();
 
 	}
+
 	private void showSortOptions(PrintWriter out, String searchString, String order, Integer page, Integer resultsPerPage) {
 		// sorting and results per page options
 		out.println("Sort by: Title(");
 
 		if (!order.equals("t_a")) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp="
-					+ resultsPerPage + "&order=t_a\">asc</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=" + resultsPerPage + "&order=t_a\">asc</a>");
 		} else {
 			out.println("asc");
 		}
@@ -344,8 +326,7 @@ public class AdvancedSearch extends HttpServlet {
 		out.println(")(");
 
 		if (!order.equals("t_d")) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp="
-					+ resultsPerPage + "&order=t_d\">des</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=" + resultsPerPage + "&order=t_d\">des</a>");
 		} else {
 			out.println("des");
 		}
@@ -353,8 +334,7 @@ public class AdvancedSearch extends HttpServlet {
 		out.println(") Year(");
 
 		if (!order.equals("y_a")) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp="
-					+ resultsPerPage + "&order=y_a\">asc</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=" + resultsPerPage + "&order=y_a\">asc</a>");
 		} else {
 			out.println("asc");
 		}
@@ -362,8 +342,7 @@ public class AdvancedSearch extends HttpServlet {
 		out.println(")(");
 
 		if (!order.equals("y_d")) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp="
-					+ resultsPerPage + "&order=y_d\">des</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=" + resultsPerPage + "&order=y_d\">des</a>");
 		} else {
 			out.println("des");
 		}
@@ -372,10 +351,9 @@ public class AdvancedSearch extends HttpServlet {
 	}
 
 	private void showPageControls(PrintWriter out, String searchString, String order, Integer page, Integer resultsPerPage, int numberOfPages) {
-		//Paging
+		// Paging
 		if (page != 1) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=1&rpp=" + resultsPerPage
-					+ "&order=" + order + "\">First</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=1&rpp=" + resultsPerPage + "&order=" + order + "\">First</a>");
 		} else {
 			out.println("Last");
 		}
@@ -383,8 +361,7 @@ public class AdvancedSearch extends HttpServlet {
 		out.println(" | ");
 
 		if (page > 1) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + (page - 1) + "&rpp="
-					+ resultsPerPage + "&order=" + order + "\">Prev</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + (page - 1) + "&rpp=" + resultsPerPage + "&order=" + order + "\">Prev</a>");
 		} else {
 			out.println("Prev");
 		}
@@ -394,15 +371,13 @@ public class AdvancedSearch extends HttpServlet {
 		if (page >= numberOfPages) {
 			out.println("Next");
 		} else {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + (page + 1) + "&rpp="
-					+ resultsPerPage + "&order=" + order + "\">Next</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + (page + 1) + "&rpp=" + resultsPerPage + "&order=" + order + "\">Next</a>");
 		}
 
 		out.println(" | ");
 
 		if (page < numberOfPages) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + numberOfPages + "&rpp="
-					+ resultsPerPage + "&order=" + order + "\">Last</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order + "\">Last</a>");
 		} else {
 			out.println("Last");
 		}
@@ -410,33 +385,28 @@ public class AdvancedSearch extends HttpServlet {
 
 	private void showRppOptions(PrintWriter out, String searchString, String order, Integer page, Integer resultsPerPage) {
 		// ===Results per page
-		// TODO maybe adjust page number when changing number of results to keep
-		// centered
 		out.println("Results per page: ");
 
 		if (!(resultsPerPage == 5)) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=5&order=" + order
-					+ "\">5</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=5&order=" + order + "\">5</a>");
 		} else {
 			out.println("5");
 		}
 
 		if (!(resultsPerPage == 25)) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=25&order="
-					+ order + "\">25</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=25&order=" + order + "\">25</a>");
 		} else {
 			out.println("25");
 		}
 
 		if (!(resultsPerPage == 100)) {
-			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=100&order="
-					+ order + "\">100</a>");
+			out.println("<a href=\"AdvancedSearch?" + searchString + "&page=" + page + "&rpp=100&order=" + order + "\">100</a>");
 		} else {
 			out.println("100");
 		}
 	}
 
-	public static void advancedSearchButton(PrintWriter out){
+	public static void advancedSearchButton(PrintWriter out) {
 		out.println("<a href=\"AdvancedSearch\">Advanced Search</a>");
 
 	}

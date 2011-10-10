@@ -22,17 +22,15 @@ public class MovieDetails extends HttpServlet {
 	 */
 	public MovieDetails() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		
-		LoginPage.kickNonUsers(request, response);//kick if not logged in
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		LoginPage.kickNonUsers(request, response);// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -68,8 +66,7 @@ public class MovieDetails extends HttpServlet {
 
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
-			String query = "SELECT DISTINCT * FROM movies m " + "WHERE m.id ='"
-					+ movieID + "'";
+			String query = "SELECT DISTINCT * FROM movies m " + "WHERE m.id ='" + movieID + "'";
 			ResultSet rs = statement.executeQuery(query);
 
 			if (rs.next()) {
@@ -80,18 +77,17 @@ public class MovieDetails extends HttpServlet {
 				String bannerURL = rs.getString("banner_url");
 				String trailerURL = rs.getString("trailer_url");
 
-				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title
-						+ "</TITLE></HEAD><BODY>");// OPEN HTML
+				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title + "</TITLE></HEAD><BODY>");// OPEN
+																								// HTML
 
-				ListResults.header(out,0);
-				
+				ListResults.header(request, out, 0);
+
 				out.println("<HR>");
-				
-				//Movie Info
-				out.println("<H2>" + title + " ("+year+")</H2><BR>");
-				out.println("<a href=\"" + trailerURL + "\"><img src=\""
-						+ bannerURL + "\"><br>Trailer</a><BR><BR>");
-				out.println("ID: "+movieID + "<BR>");
+
+				// Movie Info
+				out.println("<H2>" + title + " (" + year + ")</H2><BR>");
+				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\"><br>Trailer</a><BR><BR>");
+				out.println("ID: " + movieID + "<BR>");
 				ListResults.listByYearLink(out, year);
 				ListResults.listByDirectorLink(out, director);
 
@@ -101,9 +97,9 @@ public class MovieDetails extends HttpServlet {
 
 				ListResults.listStarsIMG(out, dbcon, movieID);
 
-				out.println("<HR>");//Footer
+				out.println("<HR>");// Footer
 
-				ListResults.footer(out,dbcon,0);
+				ListResults.footer(out, dbcon, 0);
 
 				out.println("</BODY></HTML>");
 				rs.close();
@@ -112,8 +108,8 @@ public class MovieDetails extends HttpServlet {
 			} else {
 				String title = "Movie Not Found";
 				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title + "</TITLE></HEAD>");
-				ListResults.header(out,0);
-				out.println("<BODY><H1>" + title +"</H1></BODY></HTML>");
+				ListResults.header(request, out, 0);
+				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
 				ListResults.footer(out, dbcon, 0);
 			}
 		} catch (SQLException ex) {
@@ -125,10 +121,8 @@ public class MovieDetails extends HttpServlet {
 			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error"
-					+ "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: "
-					+ ex.getMessage() + "<br>" + ex.toString()
-					+ "</P></BODY></HTML>");
+			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error" + "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></BODY></HTML>");
 			return;
 		}
 		out.close();
