@@ -299,7 +299,7 @@ public class ListResults extends HttpServlet {
 //		out.println("<a href=\"/Fabflix/Home\"><H1>FabFlix</H1></a>");
 		HttpSession session = request.getSession();
 		ListResults.searchTitlesBox(out, resultsPerPage);
-		out.println("Welcome, "+session.getAttribute("user.name") + "!                                 ");
+		out.println("Welcome, "+session.getAttribute("user.name") + "! ");
 		Logout.button(out);
 		out.println("<HR>");
 	}
