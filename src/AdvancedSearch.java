@@ -61,7 +61,7 @@ public class AdvancedSearch extends HttpServlet {
 
 			// Get parameters
 			String t = request.getParameter("t");
-			Integer y;
+			Integer y=0;
 			try {
 				y = Integer.valueOf(request.getParameter("y"));
 			} catch (Exception e) {
@@ -71,15 +71,11 @@ public class AdvancedSearch extends HttpServlet {
 			String fn = request.getParameter("fn");
 			String ln = request.getParameter("ln");
 			
-			String searchString = "t=" + java.net.URLEncoder.encode(t, "UTF-8") + "" +
-			"&y=" + y +
-			"&d=" + java.net.URLEncoder.encode(d, "UTF-8") +
-			"&fn=" +java.net.URLEncoder.encode(fn, "UTF-8") +
-			"&ln=" +java.net.URLEncoder.encode(ln, "UTF-8");
+
 			
 			// ===SORT
 			String sortBy = "";
-			String order = "";
+			String order = request.getParameter("order");
 			try {
 				if (order.equals("t_d")) {
 					sortBy = "ORDER BY title DESC";
@@ -133,19 +129,33 @@ public class AdvancedSearch extends HttpServlet {
 			Integer paramCount = 0;
 			if (!(t == null || t.isEmpty())) {
 				paramCount++;
+			}else {
+				t="";
 			}
 			if (y != 0) {
 				paramCount++;
 			}
 			if (!(d == null || d.isEmpty())) {
 				paramCount++;
+			}else {
+				d="";
 			}
 			if (!(fn == null || fn.isEmpty())) {
 				paramCount++;
+			}else {
+				fn="";
 			}
 			if (!(ln == null || ln.isEmpty())) {
 				paramCount++;
+			}else {
+				ln="";
 			}
+			
+			String searchString = "t=" + java.net.URLEncoder.encode(t, "UTF-8") + "" +
+			"&y=" + y +
+			"&d=" + java.net.URLEncoder.encode(d, "UTF-8") +
+			"&fn=" +java.net.URLEncoder.encode(fn, "UTF-8") +
+			"&ln=" +java.net.URLEncoder.encode(ln, "UTF-8");
 
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
@@ -165,17 +175,13 @@ public class AdvancedSearch extends HttpServlet {
 				//Redirect to simple search for single parameter
 				if (!(t == null || t.isEmpty()) ){
 					response.sendRedirect("ListResults?by=title&arg=" + java.net.URLEncoder.encode(t, "UTF-8"));
-				}
-				if ( y != 0 ){
+				} else if ( y != 0 ){
 					response.sendRedirect("ListResults?by=year&arg=" + y);
-				}
-				if (!(d == null || d.isEmpty()) ){
+				} else if (!(d == null || d.isEmpty()) ){
 					response.sendRedirect("ListResults?by=director&arg=" + java.net.URLEncoder.encode(d, "UTF-8"));
-				}
-				if (!(fn == null || fn.isEmpty()) ){
+				} else if (!(fn == null || fn.isEmpty()) ){
 					response.sendRedirect("ListResults?by=first_name&arg=" + java.net.URLEncoder.encode(fn, "UTF-8"));
-				}
-				if (!(ln == null || ln.isEmpty()) ){
+				} else if (!(ln == null || ln.isEmpty()) ){
 					response.sendRedirect("ListResults?by=last_name&arg=" + java.net.URLEncoder.encode(ln, "UTF-8"));
 				}
 
@@ -183,17 +189,37 @@ public class AdvancedSearch extends HttpServlet {
 
 				Statement statement = dbcon.createStatement();
 				Statement fullStatement = dbcon.createStatement();
+				String searchArg = "";
 				String query = "";
 				String fullQuery = "";
+				
+				if (!(t == null || t.isEmpty()) ){
+					searchArg += "AND title LIKE '%"+t+"%' ";
+				}
+				if ( y != 0 ){
+					searchArg += "AND year = "+y+" ";
+				}
+				if (!(d == null || d.isEmpty()) ){
+					searchArg += "AND director = '"+d+"' ";
+				}
+				if (!(fn == null || fn.isEmpty()) ){
+					searchArg += "AND first_name = '"+fn+"' ";
+				}
+				if (!(ln == null || ln.isEmpty()) ){
+					searchArg += "AND last_name = '"+ln+"' ";
+				}
 				
 				//TODO Make correct Queries
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url " +
 						"FROM movies m, stars_in_movies s, stars s1 " +
 						"WHERE s.movie_id=m.id " +
 						"AND s.star_id=s1.id " +
-						"AND first_name = '"+ fn +"' " + sortBy + " " +
+						searchArg + sortBy + " " +
 								"LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND first_name = '"+ fn +"') as results";
+				fullQuery = "SELECT count(*)  FROM (" +
+						"SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 " +
+						"WHERE s.movie_id=m.id AND s.star_id=s1.id " +
+						searchArg+") as results";
 
 
 				// Get results for this page's display
@@ -296,8 +322,9 @@ public class AdvancedSearch extends HttpServlet {
 			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY><P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString()
-					+ "</P></BODY></HTML>");
+			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString());
+			out.println("</P></BODY></HTML>");
 			return;
 		}
 		out.close();
