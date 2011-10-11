@@ -97,7 +97,7 @@ public class ListResults extends HttpServlet {
 					Pattern.compile(arg);
 				} catch (PatternSyntaxException exception) {
 					arg = "";
-				}
+				} 
 			}
 
 			// ===SORT
@@ -170,11 +170,11 @@ public class ListResults extends HttpServlet {
 				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '" + arg + "') as results";
 			} else if (searchBy.equals("first_name") || searchBy.equals("last_name")) {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND "+searchBy+" = '"+ arg +"' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND "+searchBy+" = '"+ arg +"') as results";
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND "+searchBy+" LIKE '%"+ arg +"%' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND "+searchBy+" LIKE '%"+ arg +"%') as results";
 			} else {
-				query = "SELECT DISTINCT * FROM movies m WHERE " + searchBy + " = '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + arg + "') as results";
+				query = "SELECT DISTINCT * FROM movies m WHERE " + searchBy + " LIKE '%" + arg + "%' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " LIKE '%" + arg + "%') as results";
 			}
 
 			// Get results for this page's display

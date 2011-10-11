@@ -158,6 +158,7 @@ public class AdvancedSearch extends HttpServlet {
 				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
 				ListResults.header(request, out, resultsPerPage);
 				out.println("Advanced Search: ");
+				//TODO Check box for matching substring
 				out.println("<FORM ACTION=\"AdvancedSearch\" METHOD=\"GET\">" + "Title: <INPUT TYPE=\"TEXT\" NAME=\"t\"><BR>"
 						+ "Year: <INPUT TYPE=\"TEXT\" NAME=\"y\"><BR>" + "Director: <INPUT TYPE=\"TEXT\" NAME=\"d\"><BR>"
 						+ "Star's First Name: <INPUT TYPE=\"TEXT\" NAME=\"fn\"><BR>" + "Star's Last Name: <INPUT TYPE=\"TEXT\" NAME=\"ln\"><BR>"
@@ -194,13 +195,13 @@ public class AdvancedSearch extends HttpServlet {
 					searchArg += "AND year = " + y + " ";
 				}
 				if (!(d == null || d.isEmpty())) {
-					searchArg += "AND director = '" + d + "' ";
+					searchArg += "AND director LIKE '%" + d + "%' ";
 				}
 				if (!(fn == null || fn.isEmpty())) {
-					searchArg += "AND first_name = '" + fn + "' ";
+					searchArg += "AND first_name LIKE '%" + fn + "%' ";
 				}
 				if (!(ln == null || ln.isEmpty())) {
-					searchArg += "AND last_name = '" + ln + "' ";
+					searchArg += "AND last_name LIKE '%" + ln + "%' ";
 				}
 
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url " + "FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
@@ -217,9 +218,8 @@ public class AdvancedSearch extends HttpServlet {
 				int numberOfResults = fullCount.getInt(1);
 				int numberOfPages = numberOfResults / resultsPerPage + (numberOfResults % resultsPerPage == 0 ? 0 : 1);
 
-				// Adjust page if beyond scope of the results; redirect to last
-				// page
-				// of search
+				// Adjust page if beyond scope of the results; 
+				// redirect to last page of search
 				if (numberOfResults > 0 && page > numberOfPages) {
 					response.sendRedirect("AdvancedSearch?" + searchString + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order);
 				}
