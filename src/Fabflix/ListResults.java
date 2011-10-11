@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 /**
@@ -199,7 +200,7 @@ public class ListResults extends HttpServlet {
 			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by " + searchBy + ": " + arg + "</TITLE></HEAD><BODY>");
 			// BODY
 
-			header(out, resultsPerPage);
+			header(request, out, resultsPerPage);
 
 			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2>");
 
@@ -293,10 +294,13 @@ public class ListResults extends HttpServlet {
 		browseTitles(out, resultsPerPage);
 	}
 
-	public static void header(PrintWriter out, Integer resultsPerPage) {
+	public static void header(HttpServletRequest request, PrintWriter out, Integer resultsPerPage) {
 		out.println("<a href=\"/Fabflix/ListResults\"><H1>FabFlix</H1></a>");
 		// TODO Fabflix link home
+//		out.println("<a href=\"/Fabflix/Home\"><H1>FabFlix</H1></a>");
+		HttpSession session = request.getSession();
 		ListResults.searchTitlesBox(out, resultsPerPage);
+		out.println("Welcome, "+session.getAttribute("user.name") + "! ");
 		Logout.button(out);
 		out.println("<HR>");
 	}
@@ -414,8 +418,6 @@ public class ListResults extends HttpServlet {
 	private void showRppOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage)
 			throws UnsupportedEncodingException {
 		// ===Results per page
-		// TODO maybe adjust page number when changing number of results to keep
-		// centered
 		out.println("Results per page: ");
 
 		if (!(resultsPerPage == 5)) {

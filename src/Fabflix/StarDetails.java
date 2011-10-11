@@ -25,16 +25,14 @@ public class StarDetails extends HttpServlet {
 	 */
 	public StarDetails() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		LoginPage.kickNonUsers(request, response);//kick if not logged in
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		LoginPage.kickNonUsers(request, response);// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -70,33 +68,30 @@ public class StarDetails extends HttpServlet {
 
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
-			String query = "SELECT DISTINCT * FROM stars WHERE id ='" + starID
-					+ "'";
+			String query = "SELECT DISTINCT * FROM stars WHERE id ='" + starID + "'";
 
 			ResultSet rs = statement.executeQuery(query);
 
 			if (rs.next()) {// Get star if ID exists
-				String starName = rs.getString("first_name") + " "
-						+ rs.getString("last_name");
+				String starName = rs.getString("first_name") + " " + rs.getString("last_name");
 				String starIMG = rs.getString("photo_url");
 				String dob = rs.getString("dob");
 
-				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName
-						+ "</TITLE></HEAD><BODY>");// OPEN HTML
+				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName + "</TITLE></HEAD><BODY>");// OPEN
+																									// HTML
 
-				ListResults.header(out,0);
+				ListResults.header(request, out, 0);
 
-				//Star Details
-				out.println("<H1>" + starName + "</H1><BR>" + "<img src=\""
-						+ starIMG + "\">" + "<BR>");
+				// Star Details
+				out.println("<H1>" + starName + "</H1><BR>" + "<img src=\"" + starIMG + "\">" + "<BR>");
 				out.println("ID: " + starID + "<BR>");// STAR DETAILS
-				out.println("Date of Birth: " + dob+ "<BR><BR>");
-				
+				out.println("Date of Birth: " + dob + "<BR><BR>");
+
 				ListResults.listMoviesIMG(out, dbcon, starID);
 
-				out.println("<HR>");//Footer
+				out.println("<HR>");// Footer
 
-				ListResults.footer(out,dbcon,0);
+				ListResults.footer(out, dbcon, 0);
 
 				out.println("</BODY></HTML>");
 				rs.close();
@@ -105,8 +100,8 @@ public class StarDetails extends HttpServlet {
 			} else {// starID didn't return a star
 				String title = "FabFlix -- Star Not Found";
 				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
-				ListResults.header(out,0);
-				out.println("<BODY><H1>" + title +"</H1></BODY></HTML>");
+				ListResults.header(request, out, 0);
+				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
 				ListResults.footer(out, dbcon, 0);
 			}
 		} catch (SQLException ex) {
@@ -118,10 +113,8 @@ public class StarDetails extends HttpServlet {
 			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error"
-					+ "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: "
-					+ ex.getMessage() + "<br>" + ex.toString()
-					+ "</P></BODY></HTML>");
+			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error" + "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></BODY></HTML>");
 			return;
 		}
 		out.close();
