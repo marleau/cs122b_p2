@@ -1,3 +1,4 @@
+package Fabflix;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -41,8 +42,8 @@ public class AdvancedSearch extends HttpServlet {
 		try {
 			// Open context for mySQL pooling
 			Context initCtx = new InitialContext();
-			if (initCtx == null)
-				out.println("initCtx is NULL");
+//			if (initCtx == null)
+//				out.println("initCtx is NULL");
 
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			if (envCtx == null)

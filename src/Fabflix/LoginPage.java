@@ -1,3 +1,4 @@
+package Fabflix;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -50,18 +51,20 @@ public class LoginPage extends HttpServlet {
 			session = request.getSession();
 			session.setAttribute("user.login", email);
 			try {
-				String target = (String) session.getAttribute("user.dest");
-				// TODO store address if user goes to a page w/o logging in
-				if (target != null) {
-					session.removeAttribute("user.dest");
-					response.sendRedirect(target);
-					return;
-				}
+//				String target = (String) session.getAttribute("user.dest");
+//				System.out.println(target);
+//				// TODO store address if user goes to a page w/o logging in
+//				if (target != null) {
+//					session.removeAttribute("user.dest");
+//					response.sendRedirect(target);
+//					return;
+//				}
 			} catch (Exception ignored) {
 			}
 
 			// Couldn't redirect to the target. Redirect to the site's homepage.
-			response.sendRedirect("/Fabflix/ListResults");
+//			response.sendRedirect("/Fabflix/ListResults");
+			response.sendRedirect("/Fabflix/");
 			// TODO Go to home page once designed
 
 		}
@@ -69,7 +72,15 @@ public class LoginPage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendRedirect("/Fabflix/");
+//		HttpSession session = request.getSession();// Get client session
+//		String user = (String) session.getAttribute("user.login");
+//		// Check login
+//		if (user == null ) {// FIXME
+			response.sendRedirect("/Fabflix/login.jsp");
+//		} else {
+//			PrintWriter out = response.getWriter();
+//			out.println("You are already logged in.");
+//		}
 	}
 
 	private boolean validUser(String email, String password) {
@@ -130,8 +141,8 @@ public class LoginPage extends HttpServlet {
 			}
 			//Save destination till after logged in
 			session.setAttribute("user.dest", URL);
-			response.sendRedirect("/Fabflix/");
 			// send to login page if not logged in
+			response.sendRedirect("/Fabflix/LoginPage");
 		}
 	}
 }
