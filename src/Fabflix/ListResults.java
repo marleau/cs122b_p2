@@ -157,24 +157,23 @@ public class ListResults extends HttpServlet {
 			String query;
 			String fullQuery;// full search to count results
 			if (arg.isEmpty()) {
-				query = "SELECT DISTINCT * FROM movies " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT * FROM movies) AS results";
 			} else if (searchBy.equals("genre")) {
-				query = "SELECT DISTINCT * FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id " + "AND g.genre_id=g1.id " + "AND name = '"
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres gr ON g.genre_id=gr.id WHERE name = '"
 						+ arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id "
-						+ "AND g.genre_id=g1.id " + "AND name = '" + arg + "') as results";
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres gr ON g.genre_id=gr.id WHERE name = '" + arg + "') as results";
 			} else if (searchBy.equals("letter")) {
-				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '^" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '^" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '^" + arg + "') as results";
 			} else if (searchBy.equals("title")) {
-				query = "SELECT DISTINCT * FROM movies m WHERE title REGEXP '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '" + arg + "') as results";
 			} else if (searchBy.equals("first_name") || searchBy.equals("last_name")) {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND "+searchBy+" = '"+ arg +"' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND "+searchBy+" = '"+ arg +"') as results";
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "+searchBy+" = '"+ arg +"' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "+searchBy+" = '"+ arg +"') as results";
 			} else {
-				query = "SELECT DISTINCT * FROM movies m WHERE " + searchBy + " = '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE " + searchBy + " = '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + arg + "') as results";
 			}
 
@@ -286,7 +285,7 @@ public class ListResults extends HttpServlet {
 		out.close();
 	}
 
-	public static void footer(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException {
+	public static void footer(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
 		browseGenres(out, dbcon, resultsPerPage);
 
 		out.println("<HR>");
@@ -442,27 +441,27 @@ public class ListResults extends HttpServlet {
 		}
 	}
 
-	public static void browseGenres(PrintWriter out, Connection dbcon) throws SQLException {
+	public static void browseGenres(PrintWriter out, Connection dbcon) throws SQLException, UnsupportedEncodingException {
 		browseGenres(out, dbcon, 0);// Default results per page
 	}
 
-	public static void browseGenres(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException {
+	public static void browseGenres(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
 		Statement statement = dbcon.createStatement();
 		// ===GENRE browser
 		out.println("Browse Genres: <BR>");
 		int col = 0; // fix width of display
-		ResultSet allGenre = statement.executeQuery("SELECT DISTINCT name FROM genres ORDER BY name");
+		ResultSet allGenre = statement.executeQuery("SELECT DISTINCT name FROM genres g, genres_in_movies gi WHERE gi.genre_id=g.id ORDER BY name");
 		if (allGenre.next()) {
 			String genreName = allGenre.getString("name");
 			col += genreName.length();
-			out.println("<a href=\"ListResults?by=genre&arg=" + genreName + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
+			out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
 			while (allGenre.next()) {
 				genreName = allGenre.getString("name");
 				col += genreName.length();
-				out.println(" | <a href=\"ListResults?by=genre&arg=" + genreName + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
+				out.println(" | <a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
 				if (col >= 75 && allGenre.next()) { // column character width
 					genreName = allGenre.getString("name");
-					out.println("<br><a href=\"ListResults?by=genre&arg=" + genreName + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
+					out.println("<br><a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
 					col = genreName.length();
 				}// 10 items per row
 			}
@@ -471,11 +470,11 @@ public class ListResults extends HttpServlet {
 		statement.close();
 	}
 
-	public static void browseTitles(PrintWriter out) {
+	public static void browseTitles(PrintWriter out) throws UnsupportedEncodingException {
 		browseTitles(out, 0);// Default results per page
 	}
 
-	public static void browseTitles(PrintWriter out, Integer resultsPerPage) {
+	public static void browseTitles(PrintWriter out, Integer resultsPerPage) throws UnsupportedEncodingException {
 		// ===Letter Browser
 		out.println("Browse Titles: <BR>");
 		String alphaNum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -483,7 +482,7 @@ public class ListResults extends HttpServlet {
 			if (i != 0) {
 				out.println("-");
 			}
-			out.println("<a href=\"ListResults?by=letter&arg=" + alphaNum.charAt(i) + "&page=1&rpp=" + resultsPerPage + "\">" + alphaNum.charAt(i) + "</a>");
+			out.println("<a href=\"ListResults?by=letter&arg=" + java.net.URLEncoder.encode(alphaNum.substring(i,i+1), "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + alphaNum.charAt(i) + "</a>");
 		}
 	}
 
@@ -552,22 +551,21 @@ public class ListResults extends HttpServlet {
 
 	}
 
-	public static void listGenres(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException {
+	public static void listGenres(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException, UnsupportedEncodingException {
 		listGenres(out, dbcon, 0, movieID);// Default results per page
 	}
 
-	public static void listGenres(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException {
+	public static void listGenres(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException, UnsupportedEncodingException {
 		// ===GENRES; comma separated list
 		out.println("Genre: ");
 		Statement statement = dbcon.createStatement();
-		ResultSet genres = statement.executeQuery("SELECT DISTINCT name " + "FROM movies m, genres_in_movies g, genres g1 " + "WHERE g.movie_id=m.id "
-				+ "AND g.genre_id=g1.id " + "AND m.id ='" + movieID + "' ORDER BY name");
+		ResultSet genres = statement.executeQuery("SELECT DISTINCT name FROM movies m, genres_in_movies g, genres g1 WHERE g.movie_id=m.id AND g.genre_id=g1.id AND m.id ='" + movieID + "' ORDER BY name");
 		if (genres.next()) {
 			String genre = genres.getString("name").trim();
-			out.println("<a href=\"ListResults?by=genre&arg=" + genre + "&rpp=" + rpp + "\">" + genre + "</a>");
+			out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
 			while (genres.next()) {
 				genre = genres.getString("name").trim();
-				out.println(", <a href=\"ListResults?by=genre&arg=" + genre + "&rpp=" + rpp + "\">" + genre + "</a>");
+				out.println(", <a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
 			}
 		}
 		genres.close();
