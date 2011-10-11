@@ -1,3 +1,4 @@
+package Fabflix;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -71,7 +72,15 @@ public class LoginPage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.sendRedirect("/Fabflix/");
+//		HttpSession session = request.getSession();// Get client session
+//		String user = (String) session.getAttribute("user.login");
+//		// Check login
+//		if (user == null ) {// FIXME
+			response.sendRedirect("/Fabflix/login.jsp");
+//		} else {
+//			PrintWriter out = response.getWriter();
+//			out.println("You are already logged in.");
+//		}
 	}
 
 	private boolean validUser(HttpServletRequest request, String email, String password) {
@@ -139,8 +148,8 @@ public class LoginPage extends HttpServlet {
 			}
 			// Save destination till after logged in
 			session.setAttribute("user.dest", URL);
-			response.sendRedirect("/Fabflix/");
 			// send to login page if not logged in
+			response.sendRedirect("/Fabflix/LoginPage");
 		}
 	}
 }
