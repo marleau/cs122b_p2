@@ -63,9 +63,9 @@ public class LoginPage extends HttpServlet {
 			}
 
 			// Couldn't redirect to the target. Redirect to the site's homepage.
-			response.sendRedirect("/Fabflix/ListResults");
-//			response.sendRedirect("/Fabflix/Home");
-			// TODO Go to home page once designed
+//			response.sendRedirect("/Fabflix/ListResults");
+			response.sendRedirect("/Fabflix/");
+			// Go to home page once designed
 
 		}
 
@@ -149,7 +149,7 @@ public class LoginPage extends HttpServlet {
 			// Save destination till after logged in
 			session.setAttribute("user.dest", URL);
 			// send to login page if not logged in
-			response.sendRedirect("/Fabflix/LoginPage");
+			response.sendRedirect("/Fabflix/login.jsp");
 		}
 	}
 }
