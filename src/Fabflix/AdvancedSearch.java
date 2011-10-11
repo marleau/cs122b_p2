@@ -325,9 +325,9 @@ public class AdvancedSearch extends HttpServlet {
 					// show prev/next
 					if (numberOfPages > 1) {
 						showPageControls(out, searchString, order, page, resultsPerPage, numberOfPages);
+						out.println("<BR>");
 					}
-					out.println("<BR>");
-
+					
 					// Results per page Options
 					showRppOptions(out, searchString, order, page, resultsPerPage);
 

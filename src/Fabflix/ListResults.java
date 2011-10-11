@@ -248,8 +248,8 @@ public class ListResults extends HttpServlet {
 				// show prev/next
 				if (numberOfPages > 1) {
 					showPageControls(out, searchBy, arg, order, page, resultsPerPage, numberOfPages);
+					out.println("<BR>");
 				}
-				out.println("<BR>");
 
 				// Results per page Options
 				showRppOptions(out, searchBy, arg, order, page, resultsPerPage);
@@ -518,8 +518,7 @@ public class ListResults extends HttpServlet {
 		Statement statement = dbcon.createStatement();
 		// ===STARS; list of images
 		out.println("Stars: <BR><BR>");
-		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
-				+ "AND s.star_id=s1.id " + "AND m.id = '" + movieID + "' ORDER BY last_name");
+		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND m.id = '" + movieID + "' ORDER BY last_name");
 		while (stars.next()) {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
 			String starIMG = stars.getString("photo_url");
