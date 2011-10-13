@@ -71,6 +71,7 @@ public class AdvancedSearch extends HttpServlet {
 			String d = request.getParameter("d");
 			String fn = request.getParameter("fn");
 			String ln = request.getParameter("ln");
+			String sub = request.getParameter("sub");
 
 			// ===SORT
 			String sortBy = "";
@@ -149,9 +150,11 @@ public class AdvancedSearch extends HttpServlet {
 			} else {
 				ln = "";
 			}
+			
+			if (sub == null){sub = "";}
 
 			String searchString = "t=" + java.net.URLEncoder.encode(t, "UTF-8") + "" + "&y=" + y + "&d=" + java.net.URLEncoder.encode(d, "UTF-8") + "&fn="
-					+ java.net.URLEncoder.encode(fn, "UTF-8") + "&ln=" + java.net.URLEncoder.encode(ln, "UTF-8");
+					+ java.net.URLEncoder.encode(fn, "UTF-8") + "&ln=" + java.net.URLEncoder.encode(ln, "UTF-8") + "&sub=" + sub;
 
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
@@ -159,14 +162,17 @@ public class AdvancedSearch extends HttpServlet {
 				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
 				ListResults.header(request, out, resultsPerPage);
 				out.println("Advanced Search: ");
+				//TODO Check box for matching substring
 				out.println("<FORM ACTION=\"AdvancedSearch\" METHOD=\"GET\">" + "Title: <INPUT TYPE=\"TEXT\" NAME=\"t\"><BR>"
 						+ "Year: <INPUT TYPE=\"TEXT\" NAME=\"y\"><BR>" + "Director: <INPUT TYPE=\"TEXT\" NAME=\"d\"><BR>"
-						+ "Star's First Name: <INPUT TYPE=\"TEXT\" NAME=\"fn\"><BR>" + "Star's Last Name: <INPUT TYPE=\"TEXT\" NAME=\"ln\"><BR>"
+						+ "Star's First Name: <INPUT TYPE=\"TEXT\" NAME=\"fn\"><BR>" 
+						+ "Star's Last Name: <INPUT TYPE=\"TEXT\" NAME=\"ln\"><BR>"
+						+ "Substring Search: <INPUT TYPE=\"CHECKBOX\" NAME=\"sub\"><BR>"
 						+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage
 						+ "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\"> <INPUT TYPE=\"RESET\" VALUE=\"Reset\"> </FORM>");
 				ListResults.footer(out, dbcon, resultsPerPage);
 				out.println("</body></html>");
-			} else if (paramCount == 1) {
+			} else if (paramCount == 1 && sub.isEmpty()) {
 				// Redirect to simple search for single parameter
 				if (!(t == null || t.isEmpty())) {
 					response.sendRedirect("ListResults?by=title&arg=" + java.net.URLEncoder.encode(t, "UTF-8"));
@@ -187,27 +193,70 @@ public class AdvancedSearch extends HttpServlet {
 				String searchArg = "";
 				String query = "";
 				String fullQuery = "";
+				Boolean firstCond = true;
 
 				if (!(t == null || t.isEmpty())) {
-					searchArg += "AND title LIKE '%" + t + "%' ";
+					if (firstCond){
+						firstCond=false;
+					}else{
+						searchArg += " AND ";
+					}
+					if (sub.equals("on")){
+						searchArg += "title LIKE '%" + t + "%' ";
+					}else{
+						searchArg += "title = '" + t + "' ";
+					}
 				}
 				if (y != 0) {
-					searchArg += "AND year = " + y + " ";
+					if (firstCond){
+						firstCond=false;
+					}else{
+						searchArg += "AND ";
+					}
+					searchArg += "year = " + y + " ";
 				}
 				if (!(d == null || d.isEmpty())) {
-					searchArg += "AND director = '" + d + "' ";
+					if (firstCond){
+						firstCond=false;
+					}else{
+						searchArg += "AND ";
+					}
+					if (sub.equals("on")){
+						searchArg += "director LIKE '%" + d + "%' ";
+					}else{
+						searchArg += "director = '" + d + "' ";
+					}
 				}
 				if (!(fn == null || fn.isEmpty())) {
-					searchArg += "AND first_name = '" + fn + "' ";
+					if (firstCond){
+						firstCond=false;
+					}else{
+						searchArg += "AND ";
+					}
+					if (sub.equals("on")){
+						searchArg += "first_name LIKE '%" + fn + "%' ";
+					}else{
+						searchArg += "first_name = '" + fn + "' ";
+					}
 				}
 				if (!(ln == null || ln.isEmpty())) {
-					searchArg += "AND last_name = '" + ln + "' ";
+					if (firstCond){
+						firstCond=false;
+					}else{
+						searchArg += "AND ";
+					}
+					if (sub.equals("on")){
+						searchArg += "last_name LIKE '%" + ln + "%' ";
+					} else {
+						searchArg += "last_name = '" + ln + "' ";
+					}
 				}
-
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url " + "FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
-						+ "AND s.star_id=s1.id " + searchArg + sortBy + " " + "LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (" + "SELECT DISTINCT m.id FROM movies m, stars_in_movies s, stars s1 "
-						+ "WHERE s.movie_id=m.id AND s.star_id=s1.id " + searchArg + ") as results";
+				//FIXME if a movie has no stars listed it won't show up with this string
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "
+					+ searchArg + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (" 
+					+ "SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "
+						+ searchArg + ") as results";
 
 				// Get results for this page's display
 				ResultSet searchResults = statement.executeQuery(query);
@@ -218,9 +267,8 @@ public class AdvancedSearch extends HttpServlet {
 				int numberOfResults = fullCount.getInt(1);
 				int numberOfPages = numberOfResults / resultsPerPage + (numberOfResults % resultsPerPage == 0 ? 0 : 1);
 
-				// Adjust page if beyond scope of the results; redirect to last
-				// page
-				// of search
+				// Adjust page if beyond scope of the results; 
+				// redirect to last page of search
 				if (numberOfResults > 0 && page > numberOfPages) {
 					response.sendRedirect("AdvancedSearch?" + searchString + "&page=" + numberOfPages + "&rpp=" + resultsPerPage + "&order=" + order);
 				}
@@ -277,9 +325,9 @@ public class AdvancedSearch extends HttpServlet {
 					// show prev/next
 					if (numberOfPages > 1) {
 						showPageControls(out, searchString, order, page, resultsPerPage, numberOfPages);
+						out.println("<BR>");
 					}
-					out.println("<BR>");
-
+					
 					// Results per page Options
 					showRppOptions(out, searchString, order, page, resultsPerPage);
 

@@ -83,7 +83,6 @@ public class MovieDetails extends HttpServlet {
 
 				ListResults.header(request, out, 0);
 
-				out.println("<HR>");
 
 				// Movie Info
 				out.println("<H2>" + title + " (" + year + ")</H2><BR>");
