@@ -1,15 +1,20 @@
 <%@page import="Fabflix.*" %>
 
-<%@ include file="header.html" %>
+<%@ include file="header.jsp" %>
 
-<H1>Please Login</H1><HR>
+<h1>Please Login</h1>
 
-<%= new java.util.Date() %> <br/ ><br />
+<% if ( session.getAttribute("login") != null) { 
+	boolean login = (Boolean) session.getAttribute("login"); 
+	if (!login) { %>
+		Your email or password is invalid.
+	<% }
+ } %>
 
 <form action="login" method="post">
-	Please enter your username <input type="text" name="email" /> <br />
-	Please enter your password <input type="password" name="password" /> <br />
+	Username: <input type="text" name="email" /> <br />
+	Password: <input type="password" name="password" /> <br />
 	<input type="submit" value="submit">
 </form>
 
-<%@ include file="footer.html" %>
+<%@ include file="footer.jsp" %>

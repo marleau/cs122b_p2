@@ -34,7 +34,6 @@ public class Logout extends HttpServlet {
 
 	public static void button(PrintWriter out) {
 		out.println("(<a href=\"Logout\">Log Out</a>)");
-		
 	}
 
 }

@@ -1,6 +1,8 @@
 package Fabflix;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,18 +17,10 @@ public class HomePage extends HttpServlet {
         super();
     }
 
-    
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         LoginPage.kickNonUsers(request, response);
-    }
-    
-    public static void test(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	HttpSession session = request.getSession();// Get client session
-		String user = (String) session.getAttribute("user.login");
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-
-        out.print("Welcome! " + user);
-        out.close();   
+        HttpSession session = request.getSession();
+        session.setAttribute("title", "Home");
+        response.sendRedirect("/Fabflix/index.jsp");
     }
 }

@@ -34,22 +34,20 @@ public class LoginPage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
-
 		PrintWriter out = response.getWriter();
-
 		HttpSession session = request.getSession(true);// Get client session
 
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 
 		if (!validUser(request, email, password)) {
-			out.println("<HTML><HEAD><TITLE>Login Failed</TITLE></HEAD>");
-			out.println("<BODY>Your email and password are invalid.<BR>");
-			out.println("<A HREF=\"/Fabflix/\">try again</A>");
-			out.println("</BODY></HTML>");
+			session.setAttribute("login", false);
+			response.sendRedirect("/Fabflix/login.jsp");
 		} else {
+			session.setAttribute("login", true);
 			session = request.getSession();
 			session.setAttribute("user.login", email);
+			ShoppingCart.initCart(request, response);
 			try {
 				String target = (String) session.getAttribute("user.dest");
 				// retrieve address if user goes to a page w/o logging in
@@ -63,24 +61,14 @@ public class LoginPage extends HttpServlet {
 			}
 
 			// Couldn't redirect to the target. Redirect to the site's homepage.
-			response.sendRedirect("/Fabflix/ListResults");
-//			response.sendRedirect("/Fabflix/Home");
-			// TODO Go to home page once designed
-
+			response.sendRedirect("/Fabflix/");
 		}
 
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		HttpSession session = request.getSession();// Get client session
-//		String user = (String) session.getAttribute("user.login");
-//		// Check login
-//		if (user == null ) {// FIXME
+			request.getSession().setAttribute("title", "Login");
 			response.sendRedirect("/Fabflix/login.jsp");
-//		} else {
-//			PrintWriter out = response.getWriter();
-//			out.println("You are already logged in.");
-//		}
 	}
 
 	private boolean validUser(HttpServletRequest request, String email, String password) {
@@ -134,11 +122,11 @@ public class LoginPage extends HttpServlet {
 		return false;
 	}
 
+	// Validate user
 	public static void kickNonUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		// Validate user
-		HttpSession session = request.getSession();// Get client session
-
+		HttpSession session = request.getSession();
 		String user = (String) session.getAttribute("user.login");
+		
 		// Check login
 		if (user == null) {
 			String URL = request.getRequestURL().toString();
@@ -149,7 +137,7 @@ public class LoginPage extends HttpServlet {
 			// Save destination till after logged in
 			session.setAttribute("user.dest", URL);
 			// send to login page if not logged in
-			response.sendRedirect("/Fabflix/LoginPage");
+			response.sendRedirect("/Fabflix/login");
 		}
 	}
 }

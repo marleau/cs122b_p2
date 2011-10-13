@@ -241,6 +241,10 @@ public class ListResults extends HttpServlet {
 				out.println("<BR>");
 
 				listStars(out, dbcon, resultsPerPage, movieID);
+				
+				HttpSession session = request.getSession();
+				String target = (String) session.getAttribute("user.dest");
+				out.println("<a href=\"\" onclick=\"window.open('cart?add="+movieID+"')\">Add to Cart</a>");
 
 				out.println("<HR>");
 			}
