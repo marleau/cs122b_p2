@@ -2,7 +2,11 @@
 
 <%@ include file="header.jsp" %>
 
+<div class="content">
+
 <h3>Some vital stats on your session:</h3>
+
+<br>
 
 <ul>
     <li>Session id: <%= session.getId()%> <i>(keep it secret)</i></li>
@@ -15,7 +19,11 @@
     <li>Requested session ID valid? <%= request.isRequestedSessionIdValid() %></li>
 </ul>
 
+<br><br>
+
 <h3>Session Attributes:</h3>
+
+<br>
 
 <ul>
 <%
@@ -27,5 +35,7 @@ while (e.hasMoreElements()) {
 }
 %>
 </ul>
+
+</div>
 
 <%@ include file="footer.jsp" %>

@@ -1,6 +1,7 @@
 <%@ page import="Fabflix.*, java.util.*" %>
 
 <% LoginPage.kickNonUsers(request, response); %>
+<% session.setAttribute("title", "Home"); %>
 
 <%@ include file="header.jsp" %>
 
@@ -10,11 +11,10 @@
 	
 	<% if ( ShoppingCart.isCartEmpty(request, response) ) { %>
 		Your cart is empty. Get shopping!
-		<!-- SHOW SOME RANDOM MOVIES -->
-		<a href="" onclick="window.open('/Fabflix/cart?add=Elektra');">Add to Cart</a>
+		<!-- TODO: SHOW SOME RANDOM MOVIES -->
 	<% } else { %>
-		<a href="" onclick="window.open('/Fabflix/cart?clear=1');">Empty Cart</a>
-	<%} %>
+		
+	<% } %>
 
 </div>
 

@@ -1,7 +1,6 @@
 <div class="menu">
-	<h1><a href="/Fabflix/">FabFlix</a></h1>
-
 	<ul>
+		<li class="first"><a href="/Fabflix/">FabFlix</a></li>
 		<li>Search</li>
 		<li><a href="/Fabflix/ListResults">Browse</a></li>
 		<li><a href="/Fabflix/cart">View Cart</a></li>

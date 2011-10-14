@@ -10,10 +10,6 @@
 	<body>
 	
 	<style>
-		<%@ include file="css/normalize.css" %>
-	</style>
-	
-	<style>
 		<%@ include file="css/style.css" %>
 	</style>
 	

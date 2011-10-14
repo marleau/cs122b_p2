@@ -9,6 +9,7 @@
 <% } else { %>
 	<ul>
 		<% for (String item : cart ) { %>
+			<!-- TODO: display movie titles, not ids -->
 			<li><%= item %> <a href="cart?remove=<%= item %>">Remove</a></li>
 		<% } %>
 	</ul>

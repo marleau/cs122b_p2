@@ -106,4 +106,16 @@
         <url-pattern>/cart</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <description></description>
+        <display-name>Checkout</display-name>
+        <servlet-name>Checkout</servlet-name>
+        <servlet-class>Fabflix.Checkout</servlet-class>
+        <jsp-file>/checkout.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Checkout</servlet-name>
+        <url-pattern>/checkout</url-pattern>
+    </servlet-mapping>
+    
 </web-app>
