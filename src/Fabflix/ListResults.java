@@ -157,7 +157,7 @@ public class ListResults extends HttpServlet {
 			String query;
 			String fullQuery;// full search to count results
 			if (arg.isEmpty()) {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT * FROM movies) AS results";
 			} else if (searchBy.equals("genre")) {
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres gr ON g.genre_id=gr.id WHERE name = '"
