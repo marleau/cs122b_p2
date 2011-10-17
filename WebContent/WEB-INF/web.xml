@@ -111,7 +111,6 @@
         <display-name>Checkout</display-name>
         <servlet-name>Checkout</servlet-name>
         <servlet-class>Fabflix.Checkout</servlet-class>
-        <jsp-file>/checkout.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>Checkout</servlet-name>

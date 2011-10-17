@@ -66,6 +66,12 @@ div.menu form {
 	padding: 10px;
 }
 
+div.menu input {
+}
+
+div.menu button {
+}
+
 /*
 div.menu ul.sub {
 	float: right;
@@ -83,6 +89,37 @@ div.content {
 	clear: both;
 	padding: 20px;
 	line-height: 150%;
+}
+
+div.content form {
+	width:400px;
+}
+
+div.content label{
+	display:block;
+	text-align:right;
+	width:140px;
+	float:left;
+}
+div.content input{
+	float:left;
+	font-size:12px;
+	padding:4px 2px;
+	border:solid 1px #95e1d8;
+	width:200px;
+	margin:2px 0 20px 10px;
+}
+div.content button{
+	clear:both;
+	float: left;
+	margin-left:150px;
+	width:125px;
+	height:31px;
+	background:#666666;
+	border: 0;
+	text-align:center;
+	line-height:31px;
+	color:#FFFFFF;
 }
 
 h1 {

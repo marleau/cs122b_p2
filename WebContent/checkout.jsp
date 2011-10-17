@@ -1,5 +1,7 @@
 <%@ page import="Fabflix.*, java.util.*" %>
 
+<% LoginPage.kickNonUsers(request, response); %>
+
 <%@ include file="header.jsp" %>
 
 <h1>Checkout</h1>

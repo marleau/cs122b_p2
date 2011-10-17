@@ -11,7 +11,7 @@
 	<% if ( ShoppingCart.isCartEmpty(request, response) ) { %>
 		Your cart is empty. 
 		<br>
-		<a href="/Fabflix/browse">Browse</a> for some movies.
+		<a href="/Fabflix/ListResults">Browse</a> for some movies.
 	<% } else { %>
 		Don't forget to checkout the movies in your cart!
 	<% } %>
