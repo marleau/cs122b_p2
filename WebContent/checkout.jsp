@@ -47,7 +47,7 @@
 		<label>Year</label>
 		<input type=text" name="year" />
 		
-		<button type="submit">Process Order</button>
+		<button type="submit" value="submit">Process Order</button>
 	
 	</form>
 

@@ -5,9 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,10 +29,10 @@ public class Checkout extends HttpServlet {
 		
 		if (session.getAttribute("validCC") == null)
 			session.setAttribute("validCC", false);
-		else {
-			if ((Boolean)session.getAttribute("validCC"))
-				processOrder(request, response);
-		}
+//		else {
+//			if ((Boolean)session.getAttribute("validCC"))
+//				processOrder(request, response);
+//		}
 		
 		response.sendRedirect("/Fabflix/checkout.jsp");
 	}
@@ -62,11 +60,8 @@ public class Checkout extends HttpServlet {
 			//ArrayList<String> cart = (ArrayList<String>) request.getAttribute("cart");
 			Map<String,Integer> cart = new HashMap<String, Integer>();
 			String userID = (String) request.getAttribute("user.id");
-			Date date = new Date();
-			DateFormat yearFormat = new SimpleDateFormat("yyyy");
-			DateFormat monthFormat = new SimpleDateFormat("MM");
-			DateFormat dayFormat = new SimpleDateFormat("dd");
-			String curDate = yearFormat.format(date) + "-" + monthFormat.format(date) + "-" + dayFormat.format(date);
+			Calendar cal = Calendar.getInstance();
+			String curDate = cal.YEAR + "-" + cal.MONTH + "-" + cal.DAY_OF_MONTH;
 			
 			for (Map.Entry<String, Integer> entry : cart.entrySet()) {
 				String movieID = entry.getKey();

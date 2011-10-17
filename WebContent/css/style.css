@@ -33,6 +33,10 @@ div.menu a {
 	color: #999999;
 }
 
+div.menu a:hover {
+	color: #ffffff;
+}
+
 div.menu a.first {
 	color: #1e9184;
 }
