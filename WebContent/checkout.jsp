@@ -1,13 +1,14 @@
 <%@ page import="Fabflix.*, java.util.*" %>
 
 <% LoginPage.kickNonUsers(request, response); %>
+<% ShoppingCart.initCart(request, response); %>
 <% Map<String, Integer> cart = (Map<String, Integer>) session.getAttribute("cart"); %>
 
 <%@ include file="header.jsp" %>
 
 <h1>Checkout</h1>
 
-<% if (!(Boolean)session.getAttribute("validCC")) { %>
+<% if (!(Boolean)session.getAttribute("processed")) { %>
 
 	<h3>Your cart</h3>
 	

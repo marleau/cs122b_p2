@@ -1,6 +1,7 @@
 <%@ page import="Fabflix.*, java.util.*" %>
 
 <% LoginPage.kickNonUsers(request, response); %>
+<% ShoppingCart.initCart(request, response); %>
 
 <% session.setAttribute("title", "Home"); %>
 

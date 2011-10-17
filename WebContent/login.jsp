@@ -1,5 +1,7 @@
 <%@page import="Fabflix.*" %>
 
+<% ShoppingCart.initCart(request, response); %>
+
 <%@ include file="header.jsp" %>
 
 <h1>Please Login</h1>
@@ -12,8 +14,8 @@
  } %>
 
 <form action="login" method="post">
-	Username: <input type="text" name="email" /> <br />
-	Password: <input type="password" name="password" /> <br />
+	<label>Username</label> <input type="text" name="email" /> <br />
+	<label>Password</label> <input type="password" name="password" /> <br />
 	<input type="submit" value="submit">
 </form>
 

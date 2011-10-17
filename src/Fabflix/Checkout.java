@@ -5,7 +5,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,66 +25,143 @@ import javax.sql.DataSource;
 public class Checkout extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		LoginPage.kickNonUsers(request, response);
-		
 		HttpSession session = request.getSession();
+		
+		try {
+			
+	// Open context for mySQL pooling
+		Context initCtx = new InitialContext();
+		Context envCtx = (Context) initCtx.lookup("java:comp/env");
+		if (envCtx == null)
+			System.out.println("envCtx is NULL");
+		// Look up our data source in context.xml
+		DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
+		if (ds == null)
+			System.out.println("ds is null.");
+		Connection dbcon = ds.getConnection();
+		if (dbcon == null)
+			System.out.println("dbcon is null.");
+		// connection is now open
+		
 		session.setAttribute("title", "Checkout");
 		
 		if (session.getAttribute("validCC") == null)
 			session.setAttribute("validCC", false);
-//		else {
-//			if ((Boolean)session.getAttribute("validCC"))
-//				processOrder(request, response);
-//		}
+		else {
+			if ((Boolean)session.getAttribute("validCC")) {
+				processOrder(request, response, dbcon);
+			}
+		}
 		
+		Map<String, Integer> cart = (Map<String, Integer>)session.getAttribute("cart");
+		
+		if (session.getAttribute("processed") != null) {
+			if ((Boolean)session.getAttribute("processed") && !cart.isEmpty()) {
+				session.setAttribute("processed", false);
+			}
+		} else {
+			session.setAttribute("processed", false);
+		}
+		
+		dbcon.close();
 		response.sendRedirect("/Fabflix/checkout.jsp");
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		LoginPage.kickNonUsers(request, response);
 		HttpSession session = request.getSession(true);// Get client session
 		session.setAttribute("title", "Checkout");
+			request.setAttribute("validCC", false);
+		
+		try {
+		// Open context for mySQL pooling
+		Context initCtx = new InitialContext();
+		Context envCtx = (Context) initCtx.lookup("java:comp/env");
+		if (envCtx == null)
+			System.out.println("envCtx is NULL");
+		// Look up our data source in context.xml
+		DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
+		if (ds == null)
+			System.out.println("ds is null.");
+		Connection dbcon = ds.getConnection();
+		if (dbcon == null)
+			System.out.println("dbcon is null.");
+		// connection is now open
 		
 		// validate credit card
 		if (isValid(request, response)) {
 			session.setAttribute("validCC", true);
-			processOrder(request, response);
+			processOrder(request, response, dbcon);
 		} else {
 			session.setAttribute("validCC", false);
 		}
 		
 		response.sendRedirect("/Fabflix/checkout.jsp");
+		
+		} catch (SQLException e) {
+			
+		} catch (Exception e) {
+			
+		}
 	}
 	
-	public void processOrder(HttpServletRequest request, HttpServletResponse response) {
-		Connection db = connectToDB();
+	public void processOrder(HttpServletRequest request, HttpServletResponse response, Connection db) {
 		
 		try {
 		
 			//ArrayList<String> cart = (ArrayList<String>) request.getAttribute("cart");
-			Map<String,Integer> cart = new HashMap<String, Integer>();
-			String userID = (String) request.getAttribute("user.id");
-			Calendar cal = Calendar.getInstance();
-			String curDate = cal.YEAR + "-" + cal.MONTH + "-" + cal.DAY_OF_MONTH;
+			HttpSession session = request.getSession();
+			session.setAttribute("validCC", false);
+			session.setAttribute("processed", true);
+			Map<String,Integer> cart = (Map<String, Integer>) session.getAttribute("cart");
+			String userID = (String) session.getAttribute("user.id");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			Date date = new Date();
+			String curDate = df.format(date);
 			
 			for (Map.Entry<String, Integer> entry : cart.entrySet()) {
 				String movieID = entry.getKey();
 				String query = "INSERT INTO sales (customer_id, movie_id, sales_date) VALUES ('" + userID + "', '" + movieID + "', '" + curDate + "');";
+				System.out.println(query);
 				Statement st = db.createStatement();
 				st.executeUpdate(query);
 			}
 			
 			cart.clear();
+			
 		
-		} catch (SQLException e) {
+		} catch (SQLException ex) {
+			while (ex != null) {
+				System.out.println("SQL Exception:  " + ex.getMessage());
+				ex = ex.getNextException();
+			} 
 		}
 		
-		disconnectFromDB(db);
 	}
 
 	public static boolean isValid(HttpServletRequest request, HttpServletResponse response) {
-		Connection db = connectToDB();
+		//Connection db = connectToDB();
+		HttpSession session = request.getSession();
 
 		try {
-			Statement statement = db.createStatement();
+			// Open context for mySQL pooling
+			Context initCtx = new InitialContext();
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			if (envCtx == null)
+				System.out.println("envCtx is NULL");
+			// Look up our data source in context.xml
+			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
+			if (ds == null)
+				System.out.println("ds is null.");
+			Connection dbcon = ds.getConnection();
+			if (dbcon == null)
+				System.out.println("dbcon is null.");
+			// connection is now open
+			
+			Statement statement = dbcon.createStatement();
 			String firstName = request.getParameter("firstName");
 			String lastName = request.getParameter("lastName");
 			String id = request.getParameter("id");
@@ -90,52 +169,21 @@ public class Checkout extends HttpServlet {
 			String query = "SELECT * FROM creditcards WHERE first_name='" + firstName + "' AND last_name='" + lastName + "' AND id='" + id + "' AND expiration='" + expiration + "';";
 			ResultSet result;
 			result = statement.executeQuery(query);
-			disconnectFromDB(db);
-			return result.next();
-		} catch (SQLException e) {
-		}
-		disconnectFromDB(db);
-		return false;
-	}
-
-	private static Connection connectToDB() {
-		try {
-			// Open context for mySQL pooling
-			Context initCtx = new InitialContext();
-
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			if (envCtx == null)
-				System.out.println("envCtx is NULL");
-
-			// Look up our data source in context.xml
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-
-			if (ds == null)
-				System.out.println("ds is null.");
-
-			Connection dbcon = ds.getConnection();
-			if (dbcon == null)
-				System.out.println("dbcon is null.");
-			// connection is now open
-
-			return dbcon;
-
-		} catch (SQLException ex) {
-			System.out.println("MovieDB: Error");
-			while (ex != null) {
-				System.out.println("SQL Exception:  " + ex.getMessage());
-				ex = ex.getNextException();
+			//disconnectFromDB(db);
+			if (result.next()) {
+				session.setAttribute("validCC", true);
+				return true;
+			} else {
+				session.setAttribute("validCC", false);
+				return false;
 			}
+		} catch (SQLException e) {
 		} catch (java.lang.Exception ex) {
 			System.out.println("MovieDB: Error\nSQL error in doGet: " + ex.getMessage() + "\n" + ex.toString());
 		}
-		return null;
+		
+		//disconnectFromDB(db);
+		return false;
 	}
-	
-	private static void disconnectFromDB(Connection con) {
-		try {
-			con.close();
-		} catch (SQLException e) {
-		}
-	}
+
 }

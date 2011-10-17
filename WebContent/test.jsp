@@ -4,8 +4,6 @@
 
 <h3>Some vital stats on your session:</h3>
 
-<br>
-
 <ul style="list-style-type: none;">
     <li>Session id: <%= session.getId()%> <i>(keep it secret)</i></li>
     <li>New session? <%= session.isNew() %></li>
@@ -20,8 +18,6 @@
 <br>
 
 <h3>Session Attributes:</h3>
-
-<br>
 
 <ul>
 <%
