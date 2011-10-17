@@ -1,8 +1,10 @@
 <%@ page import="Fabflix.*, java.util.*" %>
 
+<%@ include file="header.jsp" %>
+
 <% ArrayList<String> cart = (ArrayList<String>) session.getAttribute("cart"); %>
 
-<h3>Shopping Cart</h3>
+<h1>Shopping Cart</h1>
 
 <% if (ShoppingCart.isCartEmpty(request, response)) { %>
 	Your cart is empty.
@@ -16,3 +18,5 @@
 	
 	<a href="cart?clear=1">Empty cart</a>
 <% } %>
+
+<%@ include file="footer.jsp" %>

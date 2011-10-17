@@ -14,3 +14,5 @@
 	</style>
 	
 	<%@ include file="menu.jsp" %>
+	
+	<div class="content">

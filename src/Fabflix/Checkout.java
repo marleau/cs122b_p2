@@ -21,17 +21,18 @@ public class Checkout extends HttpServlet {
 		LoginPage.kickNonUsers(request, response);
 		HttpSession session = request.getSession();
 		session.setAttribute("title", "Checkout");
+		
 		// validate credit card
 		if (isValid(request, response)) {
 			session.setAttribute("validCC", true);
 		} else {
 			session.setAttribute("validCC", false);
 		}
-		//response.sendRedirect("/Fabflix/checkout");
-		request.getRequestDispatcher("/checkout.jsp");
+		
+		response.sendRedirect("/Fabflix/checkout.jsp");
 	}
 
-	private boolean isValid(HttpServletRequest request, HttpServletResponse response) {
+	public static boolean isValid(HttpServletRequest request, HttpServletResponse response) {
 		Connection db = connectToDB();
 
 		try {
@@ -51,7 +52,7 @@ public class Checkout extends HttpServlet {
 		return false;
 	}
 
-	private Connection connectToDB() {
+	private static Connection connectToDB() {
 		try {
 			// Open context for mySQL pooling
 			Context initCtx = new InitialContext();
@@ -85,7 +86,7 @@ public class Checkout extends HttpServlet {
 		return null;
 	}
 	
-	private void disconnectFromDB(Connection con) {
+	private static void disconnectFromDB(Connection con) {
 		try {
 			con.close();
 		} catch (SQLException e) {

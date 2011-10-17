@@ -33,7 +33,8 @@ public class ShoppingCart extends HttpServlet {
 		if ( request.getParameter("remove") != null )
 			removeItem(request, response);
 		
-		response.sendRedirect("/Fabflix/cart.jsp");
+		if ( request.getParameter("stopgap") == null )
+			response.sendRedirect("/Fabflix/cart.jsp");
 		
 	}
 	

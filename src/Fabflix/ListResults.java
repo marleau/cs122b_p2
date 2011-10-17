@@ -24,17 +24,10 @@ import javax.sql.DataSource;
 public class ListResults extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public ListResults() {
 		super();
 	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
+	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		LoginPage.kickNonUsers(request, response);// kick if not logged in
@@ -243,7 +236,7 @@ public class ListResults extends HttpServlet {
 				
 				HttpSession session = request.getSession();
 				String target = (String) session.getAttribute("user.dest");
-				out.println("<a href=\"\" onclick=\"window.open('cart?add="+movieID+"')\">Add to Cart</a>");
+				out.println("<a href=\"\" onclick=\"window.open('cart?add="+movieID+"&stopgap=1')\">Add to Cart</a>");
 
 				out.println("<HR>");
 			}
