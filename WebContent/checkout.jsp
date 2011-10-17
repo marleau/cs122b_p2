@@ -10,15 +10,20 @@
 
 <% if (!(Boolean)session.getAttribute("processed")) { %>
 
+	<div class="cart">
 	<h3>Your cart</h3>
 	
-	<ul class="cart">
+	<% if (session.getAttribute("updated") != null) { %>
+	<p class="success">Your cart has been updated.</p>
+	<% } %>
+	
+	<ul>
 		<% if (ShoppingCart.isCartEmpty(request, response)) { %>
 			<li>Your cart is empty.</li>
 		<% } else { %>
-			<form class="cart" action="cart" method="post">
+			<form action="checkout" method="post">
 			<% for (Map.Entry entry : cart.entrySet() ) { %>
-				<li><label>Movie: <%= entry.getKey() %>  Quantity: </label><input class="cart" type="text" name="<%= entry.getKey() %>" value="<%= entry.getValue() %>"> <a href="cart?remove=<%= entry.getKey() %>">Remove</a></li>
+				<li><label>Movie: <%= entry.getKey() %>  Quantity: </label><input type="text" name="<%= entry.getKey() %>" value="<%= entry.getValue() %>"> <a href="cart?remove=<%= entry.getKey() %>">Remove</a></li>
 			<% } %>
 		</ul>
 			<a href="cart?clear=1">Empty cart</a>
@@ -26,6 +31,8 @@
 			<input type="submit" value="submit">
 			</form>
 		<% } %>
+	
+	</div>
 	
 	<br><br>
 

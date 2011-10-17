@@ -8,6 +8,10 @@
 
 <h1>Shopping Cart</h1>
 
+<% if (session.getAttribute("updated") != null) { %>
+<p class="success">Your cart has been updated.</p>
+<% } %>
+	
 <ul class="cart">
 <% if (ShoppingCart.isCartEmpty(request, response)) { %>
 	<li>Your cart is empty.</li>

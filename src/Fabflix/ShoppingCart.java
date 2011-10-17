@@ -38,8 +38,11 @@ public class ShoppingCart extends HttpServlet {
 		if ( request.getParameter("stopgap") == null )
 			response.sendRedirect("/Fabflix/cart.jsp");
 		
-		if (request.getParameter("updateCart") != null)
-			updateCart(request, response);
+		if (request.getParameter("updateCart") != null) {
+			updateCart(request, response);	
+			session.setAttribute("updated", 1);
+		} else
+			session.removeAttribute("updated");
 		
 	}
 	

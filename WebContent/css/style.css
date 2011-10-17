@@ -151,6 +151,15 @@ p {
 	border: 1px solid #f26a63;
 }
 
-form.cart input.cart {
+.success {
+	margin: 15px;
+	text-align: center;
+	width: 400px;
+	padding: 10px;
+	background: #b5fbb1;
+	border: 1px solid #6af263;
+}
+
+cart.cart input {
 	width: 10 px;
 }

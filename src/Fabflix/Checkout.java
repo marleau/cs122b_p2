@@ -26,8 +26,11 @@ public class Checkout extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		LoginPage.kickNonUsers(request, response);
 		HttpSession session = request.getSession();
-		if (request.getParameter("updateCart") != null)
-			ShoppingCart.updateCart(request, response);		
+		if (request.getParameter("updateCart") != null) {
+			ShoppingCart.updateCart(request, response);	
+			session.setAttribute("updated", 1);
+		} else
+			session.removeAttribute("updated");	
 		try {
 			
 	// Open context for mySQL pooling
@@ -75,9 +78,12 @@ public class Checkout extends HttpServlet {
 		LoginPage.kickNonUsers(request, response);
 		HttpSession session = request.getSession(true);// Get client session
 		session.setAttribute("title", "Checkout");
-		request.setAttribute("validCC", false);
-		if (request.getParameter("updateCart") != null)
-			ShoppingCart.updateCart(request, response);		
+		
+		if (request.getParameter("updateCart") != null) {
+			ShoppingCart.updateCart(request, response);	
+			session.setAttribute("updated", 1);
+		} else
+			session.removeAttribute("updated");
 		try {
 		// Open context for mySQL pooling
 		Context initCtx = new InitialContext();
