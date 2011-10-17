@@ -38,26 +38,28 @@ public class ShoppingCart extends HttpServlet {
 		if ( request.getParameter("stopgap") == null )
 			response.sendRedirect("/Fabflix/cart.jsp");
 		
+		if (request.getParameter("updateCart") != null)
+			updateCart(request, response);
+		
 	}
 	
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		//
+		doGet(request, response);
 	}
 	
-	// TODO: update quantity of movie
-	public void updateCart(HttpServletRequest request, HttpServletResponse response) {
+	public static void updateCart(HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession();
 		Map<String, Integer> cart = (Map<String, Integer>) session.getAttribute("cart");
-
-		String newItem = request.getParameter("add");
-		
+		int qty;
 		synchronized(cart) {
-			if (newItem != null)
-				if (!cart.containsKey(newItem))
-					cart.put(newItem, 1);
+			for (Map.Entry<String, Integer> entry : cart.entrySet()) {
+				qty = Integer.valueOf(request.getParameter(entry.getKey())) ;
+				if (qty > 0)
+					cart.put(entry.getKey(), qty);
 				else
-					cart.put(newItem, cart.get(newItem) + 1);
+					cart.remove(entry.getKey());
+			}
 		}
 	}
 	

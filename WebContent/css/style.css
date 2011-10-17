@@ -150,3 +150,7 @@ p {
 	background: #fdd5d3;
 	border: 1px solid #f26a63;
 }
+
+form.cart input.cart {
+	width: 10 px;
+}

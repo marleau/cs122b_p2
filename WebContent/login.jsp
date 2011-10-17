@@ -16,7 +16,7 @@
 <form action="login" method="post">
 	<label>Username</label> <input type="text" name="email" /> <br />
 	<label>Password</label> <input type="password" name="password" /> <br />
-	<input type="submit" value="submit">
+	<input type="submit" value="Login">
 </form>
 
 <%@ include file="footer.jsp" %>
