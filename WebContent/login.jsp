@@ -9,7 +9,7 @@
 <% if ( session.getAttribute("login") != null) { 
 	boolean login = (Boolean) session.getAttribute("login"); 
 	if (!login) { %>
-		Your email or password is invalid.
+		<p class="error">Your email or password is invalid.</p>
 	<% }
  } %>
 

@@ -141,3 +141,12 @@ ul.cart {
 p {
 	margin-bottom: 10px;
 }
+
+.error {
+	margin: 15px;
+	text-align: center;
+	width: 400px;
+	padding: 10px;
+	background: #fdd5d3;
+	border: 1px solid #f26a63;
+}
