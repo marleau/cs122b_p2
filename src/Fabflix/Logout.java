@@ -29,6 +29,9 @@ public class Logout extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		session.removeAttribute("user.login");
+		session.removeAttribute("user.name");
+		session.removeAttribute("user.id");
+		session.removeAttribute("user.dest");
 		response.sendRedirect("/Fabflix/");
 	}
 
