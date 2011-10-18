@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
+import org.apache.catalina.Session;
+
 /**
  * Servlet implementation class AdvancedSearch
  */
@@ -281,9 +283,13 @@ public class AdvancedSearch extends HttpServlet {
 				}
 
 				// Open HTML
-				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
+
+				HttpSession session = request.getSession();
+				session.setAttribute("title", "Advanced Search");
+//				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
 				// BODY
-				ListResults.header(request, out, 0);
+//				ListResults.header(request, out, 0);
+				out.println(ListResults.header(session));
 
 				out.println("<H2>Advanced Search</H2>"); // Show search options
 
@@ -298,6 +304,7 @@ public class AdvancedSearch extends HttpServlet {
 						out.println("<BR><BR>");
 					}
 					showSortOptions(out, searchString, order, page, resultsPerPage);
+					out.println("<BR>");
 				}
 				while (searchResults.next()) {// For each movie, DISPLAY
 					// INFORMATION
@@ -312,10 +319,13 @@ public class AdvancedSearch extends HttpServlet {
 					String bannerURL = searchResults.getString("banner_url");
 					String director = searchResults.getString("director");
 
-					out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
+					out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
 					ListResults.addToCart(out, movieID);
 					out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
 					ListResults.listByYearLink(out, year);
+
+					out.println("<BR>");
+					
 					ListResults.listByDirectorLink(out, director);
 
 					out.println("<BR>");
@@ -326,7 +336,7 @@ public class AdvancedSearch extends HttpServlet {
 
 					ListResults.listStars(out, dbcon, resultsPerPage, movieID);
 
-					out.println("<HR>");
+					out.println("<BR><BR><HR>");
 				}
 
 				if (numberOfResults > 0) {
