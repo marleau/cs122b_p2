@@ -1,14 +1,22 @@
 package Fabflix;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 public class ShoppingCart extends HttpServlet {
 	
@@ -50,6 +58,45 @@ public class ShoppingCart extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		doGet(request, response);
+	}
+	
+	public static String getMovieTitle(HttpServletRequest request, HttpServletResponse response, String movieID) {
+		
+		String title = null;
+		
+		try {
+		
+		Context initCtx = new InitialContext();
+			if (initCtx == null)
+				System.out.println("initCtx is NULL");
+
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			if (envCtx == null)
+				System.out.println("envCtx is NULL");
+
+			// Look up our data source
+			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
+
+			if (ds == null)
+				System.out.println("ds is null.");
+
+			Connection dbcon = ds.getConnection();
+			if (dbcon == null)
+				System.out.println("dbcon is null.");
+			
+			// Declare our statement
+			Statement statement = dbcon.createStatement();
+			String query = "SELECT DISTINCT * FROM movies m " + "WHERE m.id ='" + movieID + "'";
+			ResultSet rs = statement.executeQuery(query);
+
+			if (rs.next()) 
+				return rs.getString("title");
+			
+			
+		}
+		catch (SQLException ex) {}
+		catch (java.lang.Exception ex) {} 
+		return title;
 	}
 	
 	public static void updateCart(HttpServletRequest request, HttpServletResponse response) {

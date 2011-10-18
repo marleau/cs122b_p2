@@ -24,17 +24,17 @@
 		<li><!--
 			<%= entry.getKey() %><label>Quantity: </label><input class="cart" type="text" name="<%= entry.getKey() %>" value="<%= entry.getValue() %>"> <a href="cart?remove=<%= entry.getKey() %>">Remove</a>
 			--><ul class="item">
-				<li class="first"><%= entry.getKey() %></li>
+				<li class="first"><a href="MovieDetails?id=2<%= entry.getKey() %>"><%= ShoppingCart.getMovieTitle(request, response, (String)entry.getKey()) %></a></li>
 				<li><label>Quantity</label><input class="qty" type="text" name="<%= entry.getKey() %>" value="<%= entry.getValue() %>"></li>
 				<li><a href="cart?remove=<%= entry.getKey() %>">Remove</a></li>
 			</ul>
 		</li>
 	<% } %>
 </ul>
-	<br>
-	<a href="cart?clear=1">Empty cart</a>
-	<input type="hidden" name="updateCart" value="1">
-	<input type="submit" value="Update">
+	<br><br>
+	<a style="float: right; margin: 10px;" href="cart?clear=1">Empty cart</a>
+	<input style="margin: 10px;" type="hidden" name="updateCart" value="1">
+	<input style="margin: 10px;" type="submit" value="Update">
 	</form>
 <% } %>
 </div>

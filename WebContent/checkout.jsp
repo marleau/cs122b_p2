@@ -10,60 +10,73 @@
 
 <% if (!(Boolean)session.getAttribute("processed")) { %>
 
-	<div class="cart">
-	<h3>Your cart</h3>
+<div class="cart">
 	
-	<% if (session.getAttribute("updated") != null) { %>
-	<p class="success">Your cart has been updated.</p>
+<ul class="cart">
+<% if (ShoppingCart.isCartEmpty(request, response)) { %>
+	<li>Your cart is empty.</li>
+<% } else { %>
+	<form class="cart" action="cart" method="post"><!--
+		<li><ul class="item"><li class="first">Movie Title</li><li>Quantity</li><li>Remove?</li></ul></li>
+	--><% for (Map.Entry entry : cart.entrySet() ) { %>
+		<li><!--
+			<%= entry.getKey() %><label>Quantity: </label><input class="cart" type="text" name="<%= entry.getKey() %>" value="<%= entry.getValue() %>"> <a href="cart?remove=<%= entry.getKey() %>">Remove</a>
+			--><ul class="item">
+				<li class="first"><a href="MovieDetails?id=2<%= entry.getKey() %>"><%= ShoppingCart.getMovieTitle(request, response, (String)entry.getKey()) %></a></li>
+				<li><label>Quantity</label><input class="qty" type="text" name="<%= entry.getKey() %>" value="<%= entry.getValue() %>"></li>
+				<li><a href="cart?remove=<%= entry.getKey() %>">Remove</a></li>
+			</ul>
+		</li>
 	<% } %>
-	
-	<ul>
-		<% if (ShoppingCart.isCartEmpty(request, response)) { %>
-			<li>Your cart is empty.</li>
-		<% } else { %>
-			<form action="checkout" method="post">
-			<% for (Map.Entry entry : cart.entrySet() ) { %>
-				<li><label>Movie: <%= entry.getKey() %>  Quantity: </label><input type="text" name="<%= entry.getKey() %>" value="<%= entry.getValue() %>"> <a href="cart?remove=<%= entry.getKey() %>">Remove</a></li>
-			<% } %>
-		</ul>
-			<a href="cart?clear=1">Empty cart</a>
-			<input type="hidden" name="updateCart" value="1">
-			<input type="submit" value="submit">
-			</form>
-		<% } %>
-	
-	</div>
+</ul>
+	<br><br>
+	<a style="float: right; margin: 10px;" href="cart?clear=1">Empty cart</a>
+	<input style="margin: 10px;" type="hidden" name="updateCart" value="1">
+	<input style="margin: 10px;" type="submit" value="Update">
+	</form>
+<% } %>
+</div>
+
+<div class="ccinfo">
 	
 	<br><br>
 
 	<form method="post" action="checkout">
 		<h3>Credit Card Information</h3>
 		
-		<label>First Name</label>
-		<input type="text" name="firstName" />
+		<label>First Name</label><input type="text" name="firstName" />
 		
-		<label>Last Name</label>
-		<input type="text" name="lastName" />
+		<br>
 		
-		<label>Card Number</label>
-		<input type="text" name="id" />
+		<label>Last Name</label><input type="text" name="lastName" />
+		
+		<br>
+		
+		<label>Card Number</label><input type="text" name="id" />
+		
+		<br>
 		
 		<p><b>Expiration Date</b></p>
 		
-		<label>Month</label>
-		<input type=text" name="month" />
+		<label>Month</label><input type=text" name="month" />
+		
+		<br>
 		
 		<label>Day</label><input type=text" name="day" />
 		
-		<label>Year</label>
-		<input type=text" name="year" />
+		<br>
+		
+		<label>Year</label><input type=text" name="year" />
+		
+		<br>
 		
 		<button type="submit" value="submit">Process Order</button>
 	
 	</form>
+</div>
 
 <% } else { %>
-	Your order has been processed.
+	<p class="success">Your order has been processed.</p>
 <% } %>
 
 
