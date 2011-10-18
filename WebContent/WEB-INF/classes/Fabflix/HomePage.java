@@ -21,6 +21,6 @@ public class HomePage extends HttpServlet {
         LoginPage.kickNonUsers(request, response);
         HttpSession session = request.getSession();
         session.setAttribute("title", "Home");
-        response.sendRedirect("/project2_10/index.jsp");
+        response.sendRedirect("/Fabflix/index.jsp");
     }
 }

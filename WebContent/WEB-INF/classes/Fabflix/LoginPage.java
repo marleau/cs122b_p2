@@ -30,7 +30,7 @@ public class LoginPage extends HttpServlet {
 
 		if (!validUser(request, email, password)) {
 			session.setAttribute("login", false);
-			response.sendRedirect("/project2_10/login.jsp");
+			response.sendRedirect("/Fabflix/login.jsp");
 		} else {
 			session.setAttribute("login", true);
 			session = request.getSession();
@@ -49,14 +49,14 @@ public class LoginPage extends HttpServlet {
 			}
 
 			// Couldn't redirect to the target. Redirect to the site's homepage.
-			response.sendRedirect("/project2_10/");
+			response.sendRedirect("/Fabflix/");
 		}
 
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 			request.getSession().setAttribute("title", "Login");
-			response.sendRedirect("/project2_10/login.jsp");
+			response.sendRedirect("/Fabflix/login.jsp");
 	}
 
 	private boolean validUser(HttpServletRequest request, String email, String password) {
@@ -125,7 +125,7 @@ public class LoginPage extends HttpServlet {
 			// Save destination till after logged in
 			session.setAttribute("user.dest", URL);
 			// send to login page if not logged in
-			response.sendRedirect("/project2_10/login");
+			response.sendRedirect("/Fabflix/login");
 		}
 	}
 }

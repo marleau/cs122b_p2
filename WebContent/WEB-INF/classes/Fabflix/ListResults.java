@@ -312,9 +312,9 @@ public class ListResults extends HttpServlet {
 	}
 
 	public static void header(HttpServletRequest request, PrintWriter out, Integer resultsPerPage) {
-//		out.println("<a href=\"/project2_10/ListResults\"><H1>FabFlix</H1></a>");
+//		out.println("<a href=\"/Fabflix/ListResults\"><H1>FabFlix</H1></a>");
 		// Fabflix link home
-		out.println("<a href=\"/project2_10/Home\"><H1>FabFlix</H1></a>");
+		out.println("<a href=\"/Fabflix/Home\"><H1>FabFlix</H1></a>");
 		HttpSession session = request.getSession();
 		ListResults.searchTitlesBox(out, resultsPerPage);
 		out.println("Welcome, "+session.getAttribute("user.name") + "! ");
@@ -335,7 +335,7 @@ public class ListResults extends HttpServlet {
 				style() +
 				"			</style>" +
 //				"						<%@ include file=\"menu.jsp\" %>" +
-				"<div class=\"menu\">	<ul class=\"main\">		<li class=\"first\"><a href=\"/project2_10\" class=\"first\">Fabflix</a></li>		<li><a href=\"/project2_10/ListResults\">Browse</a></li>		<li><FORM ACTION=\"ListResults\" METHOD=\"GET\">				<INPUT TYPE=\"TEXT\" NAME=\"arg\">				<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"5\">				<input TYPE=\"SUBMIT\" VALUE=\"Search Movies\">			</FORM>		</li>		<li class=\"last\"><a href=\"AdvancedSearch\">Advanced Search</a></li>		<li><a href=\"/project2_10/cart\">View Cart</a></li>		<li><a href=\"/project2_10/checkout\">Check out</a></li>		<li><a href=\"/project2_10/logout\">Logout</a></li>	</ul></div>" +
+				"<div class=\"menu\">	<ul class=\"main\">		<li class=\"first\"><a href=\"/Fabflix\" class=\"first\">Fabflix</a></li>		<li><a href=\"/Fabflix/ListResults\">Browse</a></li>		<li><FORM ACTION=\"ListResults\" METHOD=\"GET\">				<INPUT TYPE=\"TEXT\" NAME=\"arg\">				<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"5\">				<input TYPE=\"SUBMIT\" VALUE=\"Search Movies\">			</FORM>		</li>		<li class=\"last\"><a href=\"AdvancedSearch\">Advanced Search</a></li>		<li><a href=\"/Fabflix/cart\">View Cart</a></li>		<li><a href=\"/Fabflix/checkout\">Check out</a></li>		<li><a href=\"/Fabflix/logout\">Logout</a></li>	</ul></div>" +
 				"			<div class=\"content\">";
 		return rtn;
 	}

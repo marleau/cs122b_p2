@@ -25,7 +25,7 @@ public class Logout extends HttpServlet {
 		session.removeAttribute("user.dest");
 		session.removeAttribute("login");
 		session.setAttribute("validCC", false);
-		response.sendRedirect("/project2_10/");
+		response.sendRedirect("/Fabflix/");
 	}
 
 	public static void button(PrintWriter out) {

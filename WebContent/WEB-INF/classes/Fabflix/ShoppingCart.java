@@ -44,7 +44,7 @@ public class ShoppingCart extends HttpServlet {
 			removeItem(request, response);
 		
 //		if ( request.getParameter("stopgap") == null )
-//			response.sendRedirect("/project2_10/cart.jsp");
+//			response.sendRedirect("/Fabflix/cart.jsp");
 		
 		if (request.getParameter("updateCart") != null) {
 			updateCart(request, response);	
@@ -52,7 +52,7 @@ public class ShoppingCart extends HttpServlet {
 		} else
 			session.removeAttribute("updated");
 		
-		response.sendRedirect("/project2_10/cart.jsp");
+		response.sendRedirect("/Fabflix/cart.jsp");
 	}
 	
 	

@@ -74,7 +74,7 @@ public class Checkout extends HttpServlet {
 		}
 		
 		dbcon.close();
-		response.sendRedirect("/project2_10/checkout.jsp");
+		response.sendRedirect("/Fabflix/checkout.jsp");
 		} catch (Exception e) {
 			
 		}
@@ -124,7 +124,7 @@ public class Checkout extends HttpServlet {
 			session.setAttribute("validCC", false);
 		}
 		
-		response.sendRedirect("/project2_10/checkout.jsp");
+		response.sendRedirect("/Fabflix/checkout.jsp");
 		
 		} catch (SQLException e) {
 			
