@@ -87,10 +87,19 @@ public class MovieDetails extends HttpServlet {
 				// Movie Info
 				out.println("<H2>" + title + " (" + year + ")</H2><BR>");
 				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\"><br>Trailer</a><BR><BR>");
-				out.println("ID: " + movieID + "<BR>");
+				
+				ListResults.addToCart(out, movieID);
+				
+				out.println("<BR><BR>ID: " + movieID + "<BR>");
+				
 				ListResults.listByYearLink(out, year);
+
+				out.println("<BR>");
+				
 				ListResults.listByDirectorLink(out, director);
 
+				out.println("<BR>");
+				
 				ListResults.listGenres(out, dbcon, movieID);
 
 				out.println("<BR><BR>");

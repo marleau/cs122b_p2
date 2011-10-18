@@ -221,8 +221,11 @@ public class ListResults extends HttpServlet {
 				String bannerURL = searchResults.getString("banner_url");
 				String director = searchResults.getString("director");
 
-				out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR>");
-				out.println("ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
+				out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
+
+				addToCart(out, movieID);
+				
+				out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
 				listByYearLink(out, year,resultsPerPage);
 				listByDirectorLink(out, director,resultsPerPage);
 
@@ -236,7 +239,7 @@ public class ListResults extends HttpServlet {
 				
 				HttpSession session = request.getSession();
 				String target = (String) session.getAttribute("user.dest");
-				out.println("<a href=\"\" onclick=\"window.open('cart?add="+movieID+"&stopgap=1')\">Add to Cart</a>");
+
 
 				out.println("<HR>");
 			}
@@ -282,6 +285,10 @@ public class ListResults extends HttpServlet {
 		out.close();
 	}
 
+	public static void addToCart(PrintWriter out, Integer movieID) {
+		out.println("<a href=\"\" onclick=\"window.open('cart?add="+movieID+"&stopgap=1')\">Add to Cart</a>");
+	}
+
 	public static void footer(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
 		browseGenres(out, dbcon, resultsPerPage);
 
@@ -306,7 +313,7 @@ public class ListResults extends HttpServlet {
 	}
 
 	public static void listByYearLink(PrintWriter out, Integer year, Integer rpp) {
-		out.println("Year: <a href=\"ListResults?by=year&arg=" + year + "&rpp=" + rpp + "\">" + year + "</a><BR>");
+		out.println("Year: <a href=\"ListResults?by=year&arg=" + year + "&rpp=" + rpp + "\">" + year + "</a>");
 	}
 
 	public static void listByDirectorLink(PrintWriter out, String director) throws UnsupportedEncodingException {
@@ -473,14 +480,19 @@ public class ListResults extends HttpServlet {
 
 	public static void browseTitles(PrintWriter out, Integer resultsPerPage) throws UnsupportedEncodingException {
 		// ===Letter Browser
-		out.println("Browse Titles: <BR>");
+		out.println(browseTitles(resultsPerPage));
+	}
+	
+	public static String browseTitles(Integer resultsPerPage) throws UnsupportedEncodingException{
+		String rtn = "Browse Titles: <BR>";
 		String alphaNum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for (int i = 0; i < alphaNum.length(); i++) {
 			if (i != 0) {
-				out.println("-");
+				rtn += " - ";
 			}
-			out.println("<a href=\"ListResults?by=letter&arg=" + java.net.URLEncoder.encode(alphaNum.substring(i,i+1), "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + alphaNum.charAt(i) + "</a>");
+			rtn += "<a href=\"ListResults?by=letter&arg=" + java.net.URLEncoder.encode(alphaNum.substring(i,i+1), "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + alphaNum.charAt(i) + "</a>";
 		}
+		return rtn;
 	}
 
 	public static void listStars(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException {
@@ -542,7 +554,9 @@ public class ListResults extends HttpServlet {
 			Integer movieID = movies.getInt("movie_id");
 			String bannerURL = movies.getString("banner_url");
 
-			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\">" + title + " (" + year + ")" + "</a><BR><BR>");
+			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\">" + title + " (" + year + ")" + "</a> (");
+			ListResults.addToCart(out, movieID);
+			out.println(")<BR><BR>");
 		}
 
 	}
