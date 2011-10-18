@@ -5,11 +5,15 @@
 	</head>
 	
 	<style>
-		function close() {
-			self.close();
-		}
+		<%@ include file="css/style.css" %>
 	</style>
 	
-	<body onBlur=close()>
+	<body>
+	<div class="content">
+	Your movie has been added to your cart.
+	
+	<br>
+	<a href="javascript: self.close()">Close Window</a>
+	</div>
 	</body>
 </html>

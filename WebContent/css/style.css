@@ -163,6 +163,7 @@ p {
 div.cart {
 	/* border: 1px dotted green; */
 	width: 600px;
+	margin-bottom: 50px;
 }
 
 div.cart form {

@@ -298,7 +298,7 @@ public class ListResults extends HttpServlet {
 	}
 
 	public static void addToCart(PrintWriter out, Integer movieID) {
-		out.println("<a href=\"\" onclick=\"window.open('cart?add="+movieID+"&stopgap=1')\">Add to Cart</a>");
+		out.println("<a href=\"cart?add="+movieID+"\">Add to Cart</a>");
 	}
 
 	public static void footer(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {

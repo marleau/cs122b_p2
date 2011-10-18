@@ -32,6 +32,7 @@
 	<% } %>
 </ul>
 	<br><br>
+	<div style="clear: both;"></div>
 	<a style="float: right; margin: 10px;" href="cart?clear=1">Empty cart</a>
 	<input style="margin: 10px;" type="hidden" name="updateCart" value="1">
 	<input style="margin: 10px;" type="submit" value="Update">

@@ -43,8 +43,8 @@ public class ShoppingCart extends HttpServlet {
 		if ( request.getParameter("remove") != null )
 			removeItem(request, response);
 		
-		if ( request.getParameter("stopgap") == null )
-			response.sendRedirect("/Fabflix/cart.jsp");
+//		if ( request.getParameter("stopgap") == null )
+//			response.sendRedirect("/Fabflix/cart.jsp");
 		
 		if (request.getParameter("updateCart") != null) {
 			updateCart(request, response);	
@@ -52,7 +52,7 @@ public class ShoppingCart extends HttpServlet {
 		} else
 			session.removeAttribute("updated");
 		
-		
+		response.sendRedirect("/Fabflix/cart.jsp");
 	}
 	
 	
@@ -133,6 +133,7 @@ public class ShoppingCart extends HttpServlet {
 				else
 					cart.put(newItem, cart.get(newItem) + 1);
 		}
+		
 	}
 	
 	public void removeItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
