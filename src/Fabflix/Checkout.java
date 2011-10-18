@@ -78,6 +78,7 @@ public class Checkout extends HttpServlet {
 		LoginPage.kickNonUsers(request, response);
 		HttpSession session = request.getSession(true);// Get client session
 		session.setAttribute("title", "Checkout");
+		Map<String, Integer> cart = (Map<String, Integer>)session.getAttribute("cart");
 		
 		if (request.getParameter("updateCart") != null) {
 			ShoppingCart.updateCart(request, response);	
