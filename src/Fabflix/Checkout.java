@@ -135,7 +135,9 @@ public class Checkout extends HttpServlet {
 				String query = "INSERT INTO sales (customer_id, movie_id, sales_date) VALUES ('" + userID + "', '" + movieID + "', '" + curDate + "');";
 				System.out.println(query);
 				Statement st = db.createStatement();
-				st.executeUpdate(query);
+				for (int i = 0; i < entry.getValue(); i++) {
+					st.executeUpdate(query);
+				}
 			}
 			
 			cart.clear();

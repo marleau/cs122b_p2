@@ -53,8 +53,7 @@
 		<label>Month</label>
 		<input type=text" name="month" />
 		
-		<label>Day</label>
-		<input type=text" name="day" />
+		<label>Day</label><input type=text" name="day" />
 		
 		<label>Year</label>
 		<input type=text" name="year" />

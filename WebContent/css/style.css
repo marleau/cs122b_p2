@@ -24,6 +24,7 @@ div.menu {
 	height: 40 px;
 	background-color: #333333;
 	color: #eeeeee;
+	overflow: hidden;
 }
 
 div.menu a {
@@ -51,7 +52,6 @@ div.menu ul li {
 }
 
 div.menu ul.main {
-	width: 100%;
 	height: 39px;
 }
 
@@ -160,6 +160,16 @@ p {
 	border: 1px solid #6af263;
 }
 
-cart.cart input {
+div.cart {
+	width: 500 px;
+	border: 1px dotted green;
+}
+
+div.cart form {
+	width: 400 px;
+	border: 1ps solid red;
+}
+
+div.cart input {
 	width: 10 px;
 }

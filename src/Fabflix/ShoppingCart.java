@@ -55,7 +55,7 @@ public class ShoppingCart extends HttpServlet {
 		HttpSession session = request.getSession();
 		Map<String, Integer> cart = (Map<String, Integer>) session.getAttribute("cart");
 		int qty;
-		synchronized(cart) {
+//		synchronized(cart) {
 			for (Map.Entry<String, Integer> entry : cart.entrySet()) {
 				qty = Integer.valueOf(request.getParameter(entry.getKey())) ;
 				if (qty > 0)
@@ -63,7 +63,7 @@ public class ShoppingCart extends HttpServlet {
 				else
 					cart.remove(entry.getKey());
 			}
-		}
+//		}
 	}
 	
 	public void addItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
