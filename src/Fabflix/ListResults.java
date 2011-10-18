@@ -213,6 +213,7 @@ public class ListResults extends HttpServlet {
 					out.println("<BR><BR>");
 				}
 				showSortOptions(out, searchBy, arg, order, page, resultsPerPage);
+				out.println("<BR>");
 			}
 
 			while (searchResults.next()) {// For each movie, DISPLAY INFORMATION
@@ -227,12 +228,15 @@ public class ListResults extends HttpServlet {
 				String bannerURL = searchResults.getString("banner_url");
 				String director = searchResults.getString("director");
 
-				out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
+				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
 
 				addToCart(out, movieID);
 				
 				out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
 				listByYearLink(out, year,resultsPerPage);
+
+				out.println("<BR>");
+				
 				listByDirectorLink(out, director,resultsPerPage);
 
 				out.println("<BR>");
@@ -246,7 +250,7 @@ public class ListResults extends HttpServlet {
 //				String target = (String) session.getAttribute("user.dest");
 
 
-				out.println("<HR>");
+				out.println("<BR><BR><HR>");
 			}
 
 			if (numberOfResults > 0) {
