@@ -44,6 +44,7 @@ public class ShoppingCart extends HttpServlet {
 		} else
 			session.removeAttribute("updated");
 		
+		
 	}
 	
 	
@@ -54,16 +55,21 @@ public class ShoppingCart extends HttpServlet {
 	public static void updateCart(HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession();
 		Map<String, Integer> cart = (Map<String, Integer>) session.getAttribute("cart");
+		ArrayList<String> zero = new ArrayList<String>();
 		int qty;
-//		synchronized(cart) {
+		synchronized(cart) {
 			for (Map.Entry<String, Integer> entry : cart.entrySet()) {
 				qty = Integer.valueOf(request.getParameter(entry.getKey())) ;
 				if (qty > 0)
 					cart.put(entry.getKey(), qty);
 				else
-					cart.remove(entry.getKey());
+					zero.add(entry.getKey());
 			}
-//		}
+			
+			for (String movieID : zero) {
+				cart.remove(movieID);
+			}
+		}
 	}
 	
 	public void addItem(HttpServletRequest request, HttpServletResponse response) throws IOException {

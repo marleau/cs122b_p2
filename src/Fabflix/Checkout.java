@@ -84,6 +84,15 @@ public class Checkout extends HttpServlet {
 			session.setAttribute("updated", 1);
 		} else
 			session.removeAttribute("updated");
+		
+		if (session.getAttribute("processed") != null) {
+			if ((Boolean)session.getAttribute("processed") && !cart.isEmpty()) {
+				session.setAttribute("processed", false);
+			}
+		} else {
+			session.setAttribute("processed", false);
+		}
+		
 		try {
 		// Open context for mySQL pooling
 		Context initCtx = new InitialContext();

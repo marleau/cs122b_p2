@@ -103,7 +103,7 @@ div.content form {
 	width:400px;
 }
 
-div.content label{
+/*div.content label{
 	display:block;
 	text-align:right;
 	width:140px;
@@ -130,7 +130,7 @@ div.content button{
 	color:#FFFFFF;
 }
 
-h1, h2, h3 {
+*/h1, h2, h3 {
 	margin-bottom: 15px;
 }
 
@@ -161,15 +161,29 @@ p {
 }
 
 div.cart {
-	width: 500 px;
 	border: 1px dotted green;
+	width: 600px;
 }
 
 div.cart form {
-	width: 400 px;
-	border: 1ps solid red;
+	width: 600px;
 }
 
-div.cart input {
-	width: 10 px;
+div.cart label {
+	margin-right: 10px;
+}
+
+div.cart input.qty {
+	width: 20px;
+}
+
+div.cart li {
+	float: left;
+	display: inline;
+	padding-left: 10px;
+}
+
+div.cart li.first {
+	width: 250px;
+	padding-left: 0 px;
 }
