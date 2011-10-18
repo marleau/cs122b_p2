@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 /**
@@ -159,10 +160,16 @@ public class AdvancedSearch extends HttpServlet {
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
 				// ===Advanced Search Form
-				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
-				ListResults.header(request, out, resultsPerPage);
+				HttpSession session = request.getSession();
+				session.setAttribute("title", "Advanced Search");
+				
+//				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
+
+//				ListResults.header(request, out, resultsPerPage);
+				out.println(ListResults.header(session));
+				
 				out.println("Advanced Search: ");
-				//TODO Check box for matching substring
+
 				out.println("<FORM ACTION=\"AdvancedSearch\" METHOD=\"GET\">" + "Title: <INPUT TYPE=\"TEXT\" NAME=\"t\"><BR>"
 						+ "Year: <INPUT TYPE=\"TEXT\" NAME=\"y\"><BR>" + "Director: <INPUT TYPE=\"TEXT\" NAME=\"d\"><BR>"
 						+ "Star's First Name: <INPUT TYPE=\"TEXT\" NAME=\"fn\"><BR>" 
@@ -251,7 +258,7 @@ public class AdvancedSearch extends HttpServlet {
 						searchArg += "last_name = '" + ln + "' ";
 					}
 				}
-				//FIXME if a movie has no stars listed it won't show up with this string
+
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "
 					+ searchArg + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (" 

@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 /**
@@ -77,10 +78,13 @@ public class StarDetails extends HttpServlet {
 				String starIMG = rs.getString("photo_url");
 				String dob = rs.getString("dob");
 
-				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName + "</TITLE></HEAD><BODY>");// OPEN
+//				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName + "</TITLE></HEAD><BODY>");// OPEN
 																									// HTML
 
-				ListResults.header(request, out, 0);
+				HttpSession session = request.getSession();
+				session.setAttribute("title", starName);
+//				ListResults.header(request, out, 0);
+				out.println(ListResults.header(session));
 
 				// Star Details
 				out.println("<H1>" + starName + "</H1><BR>" + "<img src=\"" + starIMG + "\">" + "<BR>");

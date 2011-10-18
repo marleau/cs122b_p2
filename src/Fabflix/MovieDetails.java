@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import javax.naming.InitialContext;
 import javax.naming.Context;
@@ -78,10 +79,13 @@ public class MovieDetails extends HttpServlet {
 				String bannerURL = rs.getString("banner_url");
 				String trailerURL = rs.getString("trailer_url");
 
-				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title + "</TITLE></HEAD><BODY>");// OPEN
+//				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title + "</TITLE></HEAD><BODY>");// OPEN
 																								// HTML
 
-				ListResults.header(request, out, 0);
+				HttpSession session = request.getSession();
+				session.setAttribute("title", title);
+//				ListResults.header(request, out, 0);
+				out.println(ListResults.header(session));
 
 
 				// Movie Info

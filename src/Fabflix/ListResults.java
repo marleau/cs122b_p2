@@ -189,10 +189,16 @@ public class ListResults extends HttpServlet {
 			// ===Start Writing Page===========================================
 
 			// TITLE
-			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by " + searchBy + ": " + arg + "</TITLE></HEAD><BODY>");
+
+			HttpSession session = request.getSession();
+			session.setAttribute("title", "Search by " + searchBy + ": " + arg);
+			
+			
+//			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by " + searchBy + ": " + arg + "</TITLE></HEAD><BODY>");
+			out.println(header(session));
 			// BODY
 
-			header(request, out, resultsPerPage);
+//			header(request, out, resultsPerPage);
 
 			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2>");
 
@@ -237,8 +243,7 @@ public class ListResults extends HttpServlet {
 
 				listStars(out, dbcon, resultsPerPage, movieID);
 				
-				HttpSession session = request.getSession();
-				String target = (String) session.getAttribute("user.dest");
+//				String target = (String) session.getAttribute("user.dest");
 
 
 				out.println("<HR>");
@@ -267,7 +272,7 @@ public class ListResults extends HttpServlet {
 			fullStatement.close();
 			dbcon.close();
 
-			out.println("</BODY></HTML>");
+			out.close();
 
 		} catch (SQLException ex) {
 			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
@@ -295,6 +300,8 @@ public class ListResults extends HttpServlet {
 		out.println("<HR>");
 
 		browseTitles(out, resultsPerPage);
+		
+		out.println("		</div>	</body></html>");
 	}
 
 	public static void header(HttpServletRequest request, PrintWriter out, Integer resultsPerPage) {
@@ -306,6 +313,32 @@ public class ListResults extends HttpServlet {
 		out.println("Welcome, "+session.getAttribute("user.name") + "! ");
 		Logout.button(out);
 		out.println("<HR>");
+	}
+	
+	public static String header(HttpSession session){
+		String rtn = "<!DOCTYPE html>" +
+				"		<html>" +
+				"			<head>" +
+//				"		        <!--<base href=\"${pagecontext.request.contextpath}\" />-->" +
+				"		        <title>Fabflix - "+ session.getAttribute("title")+"</title>" +
+				"<LINK href=\"css/normalize.css\" rel=\"stylesheet\" type=\"text/css\" media=\"all\">" +
+				"<LINK href=\"css/style.css\" rel=\"stylesheet\" type=\"text/css\" media=\"all\">" +
+//				"				<!--<link rel=\"stylesheet\" href=\"css/normalize.css\" type=\"text/css\" />-->" +
+//				"				<!--<link rel=\"stylesheet\" href=\"css/style.css\" type=\"text/css\" />-->" +
+				"			</head>" +
+				"			<body>" +
+				"					<style>" +
+//				"				<%@ include file=\"css/style.css\" %>" +
+				style() +
+				"			</style>" +
+//				"						<%@ include file=\"menu.jsp\" %>" +
+				"<div class=\"menu\">	<ul class=\"main\">		<li class=\"first\"><a href=\"/Fabflix\" class=\"first\">Fabflix</a></li>		<li><a href=\"/Fabflix/ListResults\">Browse</a></li>		<li><FORM ACTION=\"ListResults\" METHOD=\"GET\">				<INPUT TYPE=\"TEXT\" NAME=\"arg\">				<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"5\">				<input TYPE=\"SUBMIT\" VALUE=\"Search Movies\">			</FORM>		</li>		<li class=\"last\"><a href=\"AdvancedSearch\">Advanced Search</a></li>		<li><a href=\"/Fabflix/cart\">View Cart</a></li>		<li><a href=\"/Fabflix/checkout\">Check out</a></li>		<li><a href=\"/Fabflix/logout\">Logout</a></li>	</ul></div>" +
+				"			<div class=\"content\">";
+		return rtn;
+	}
+	
+	public static String style(){
+		return "/* NORMALIZE */* {	margin: 0;	padding: 0;}ul {	list-style-type: none;}/* GLOBAL */body {    font-family: Helvetica;    font-size: 16 px;    color: #666666;}/* MENU */div.menu {	width: 100%;	height: 40 px;	background-color: #333333;	color: #eeeeee;	overflow: hidden;}div.menu a {	display: block;	text-decoration: none;	padding: 10px;	color: #999999;}div.menu a:hover {	color: #ffffff;}div.menu a.first {	color: #1e9184;}div.menu ul {	list-style-type: none;}div.menu ul li {	padding: 10 px;	background-color: #333333;}div.menu ul.main {	height: 39px;}div.menu ul.main li {	float: left;	display: inline;	border-right: 1px solid #999999;}div.menu li.first {	padding-right: 100px;}div.menu li.last {	float: right;	border: 0;}div.menu form {	padding: 10px;}div.menu input {}div.menu button {}/*div.menu ul.sub {	float: right;	background-color: #333333;}div.menu ul.sub li {	float: left;	display: inline;} *//* CONTENT */div.content {	clear: both;	padding: 20px;	line-height: 150%;}div.content form {	width:400px;}/*div.content label{	display:block;	text-align:right;	width:140px;	float:left;}div.content input{	float:left;	font-size:12px;	padding:4px 2px;	border:solid 1px #95e1d8;	width:200px;	margin:2px 0 20px 10px;}div.content button{	clear:both;	float: left;	margin-left:150px;	width:125px;	height:31px;	background:#666666;	border: 0;	text-align:center;	";
 	}
 
 	public static void listByYearLink(PrintWriter out, Integer year) {
