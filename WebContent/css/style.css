@@ -173,8 +173,13 @@ div.cart label {
 	margin-right: 10px;
 }
 
+div.cart input {
+	float: right;
+}
+
 div.cart input.qty {
 	width: 20px;
+	float: none;
 }
 
 div.cart li {
@@ -186,4 +191,22 @@ div.cart li {
 div.cart li.first {
 	width: 250px;
 	padding-left: 0 px;
+}
+
+div.content a {
+	color: #1e9184;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+div.content a:hover {
+	color: #f6b546;
+	text-decoration: underline;
+}
+
+hr {
+	height: 1px;
+	background: #1e9184;
+	border: 0;
+	margin: 20px 0px;
 }
