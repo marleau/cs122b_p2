@@ -53,8 +53,14 @@ public class Checkout extends HttpServlet {
 			session.setAttribute("validCC", false);
 		else {
 			if ((Boolean)session.getAttribute("validCC")) {
+				session.removeAttribute("ccError");
 				processOrder(request, response, dbcon);
 			}
+		}
+		
+		if (session.getAttribute("ccError") != null ) {
+			if ((Boolean)session.getAttribute("ccError"))
+				session.removeAttribute("ccError");
 		}
 		
 		Map<String, Integer> cart = (Map<String, Integer>)session.getAttribute("cart");
@@ -112,6 +118,7 @@ public class Checkout extends HttpServlet {
 		// validate credit card
 		if (isValid(request, response)) {
 			session.setAttribute("validCC", true);
+			session.removeAttribute("ccError");
 			processOrder(request, response, dbcon);
 		} else {
 			session.setAttribute("validCC", false);
@@ -133,6 +140,7 @@ public class Checkout extends HttpServlet {
 			//ArrayList<String> cart = (ArrayList<String>) request.getAttribute("cart");
 			HttpSession session = request.getSession();
 			session.setAttribute("validCC", false);
+			session.removeAttribute("ccError");
 			session.setAttribute("processed", true);
 			Map<String,Integer> cart = (Map<String, Integer>) session.getAttribute("cart");
 			String userID = (String) session.getAttribute("user.id");
@@ -187,12 +195,13 @@ public class Checkout extends HttpServlet {
 			String id = request.getParameter("id");
 			String expiration = request.getParameter("year") + "-" + request.getParameter("month") + "-" + request.getParameter("day");
 			String query = "SELECT * FROM creditcards WHERE first_name='" + firstName + "' AND last_name='" + lastName + "' AND id='" + id + "' AND expiration='" + expiration + "';";
+			System.out.println(query);
 			ResultSet result;
 			result = statement.executeQuery(query);
 			//disconnectFromDB(db);
 			if (result.next()) {
 				session.setAttribute("validCC", true);
-				session.setAttribute("ccError", false);
+				session.removeAttribute("ccError");
 				return true;
 			} else {
 				session.setAttribute("ccError", true);
