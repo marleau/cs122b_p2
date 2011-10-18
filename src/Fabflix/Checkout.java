@@ -192,8 +192,10 @@ public class Checkout extends HttpServlet {
 			//disconnectFromDB(db);
 			if (result.next()) {
 				session.setAttribute("validCC", true);
+				session.setAttribute("ccError", false);
 				return true;
 			} else {
+				session.setAttribute("ccError", true);
 				session.setAttribute("validCC", false);
 				return false;
 			}

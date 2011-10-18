@@ -45,6 +45,10 @@
 	<form method="post" action="checkout">
 		<h3>Credit Card Information</h3>
 		
+		<% if (session.getAttribute("ccError") != null && (Boolean)session.getAttribute("ccError")) { %>
+			<p class="error">Your credit card information is not valid.</p>
+		<% } %>
+		
 		<label>First Name</label><input type="text" name="firstName" />
 		
 		<br>
